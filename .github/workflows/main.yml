@@ -1,15 +1,33 @@
-name: github pages
+name: Build and Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [ $default-branch ]
+
+permissions:
+  contents: write
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: "Dioxus Deploy"
-        uses: DioxusLabs/deploy-action@0.1.1
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolSource: "Dioxuslabs/cli"
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install dioxus-cli
+        run: cargo install dioxus-cli
+
+      - name: Build
+        run: dx build --release
+      
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with: 
+          folder: dist
