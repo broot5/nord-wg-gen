@@ -52,6 +52,7 @@ impl Server {
 struct Input {
     private_key: String,
     country: String,
+    country_code: String,
     city: String,
     p2p: bool,
     dns: String,
@@ -76,6 +77,7 @@ fn App(cx: Scope) -> Element {
 
     let private_key = use_state(cx, || String::new());
     let country = use_state(cx, || String::new());
+    let country_code = use_state(cx, || String::new());
     let city = use_state(cx, || String::new());
     let p2p = use_state(cx, || true);
     let dns = use_state(cx, || String::from("1.1.1.1"));
@@ -86,6 +88,7 @@ fn App(cx: Scope) -> Element {
     let input = Input {
         private_key: private_key.to_string(),
         country: country.to_string(),
+        country_code: country_code.to_string(),
         city: city.to_string(),
         p2p: **p2p,
         dns: dns.to_string(),
@@ -112,6 +115,16 @@ fn App(cx: Scope) -> Element {
                     country.set(e.value.clone());
                 },
                 value: "{country}"
+            }
+        }
+        div {
+            label { r#for: "country_code", "Country code" }
+            input {
+                id: "country_code",
+                oninput: move |e| {
+                    country_code.set(e.value.clone().to_uppercase());
+                },
+                value: "{country_code}"
             }
         }
         div {
@@ -184,13 +197,17 @@ fn filter_servers(input: &Input, servers: &Vec<Server>) -> Server {
         servers.retain(|x| x.country() == input.country);
     }
 
+    if input.country_code != "" {
+        servers.retain(|x| x.country_code() == input.country_code);
+    }
+
     if input.city != "" {
         servers.retain(|x| x.city() == input.city);
     }
 
     servers.retain(|x| x.is_p2p() == input.p2p);
 
-    if input.country != "" || input.city != "" {
+    if input.country != "" || input.country_code != "" || input.city != "" {
         servers.sort_by(|a, b| a.load.cmp(&b.load));
     }
 
