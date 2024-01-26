@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,26 +25,6 @@ jobs:
       - name: Build
         run: dx build --release
       
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Install dioxus-cli
-        run: cargo install dioxus-cli
-
-      - name: Build
-        run: dx build --release
-
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
