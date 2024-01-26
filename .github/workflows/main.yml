@@ -6,7 +6,7 @@ permissions:
   contents: write
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +27,7 @@ jobs:
       
   deploy:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Deploy
