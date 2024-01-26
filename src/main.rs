@@ -1,6 +1,5 @@
 use base64::prelude::*;
 use dioxus::prelude::*;
-use image::Luma;
 use log::LevelFilter;
 use qrcode::QrCode;
 use serde::Deserialize;
@@ -73,7 +72,6 @@ fn App(cx: Scope) -> Element {
             .send()
             .await?
             .json::<Vec<Server>>()
-            //.text()
             .await
     });
 
@@ -168,7 +166,7 @@ fn App(cx: Scope) -> Element {
         div {
             button {
                 onclick: move |_| {
-                    let config = asd(&input, &servers.value().unwrap().as_ref().unwrap());
+                    let config = generate_config(&input, &servers.value().unwrap().as_ref().unwrap());
 
                     textarea.set(config.clone());
                     qrcode.set(make_qrcode(&config));
@@ -195,7 +193,7 @@ fn App(cx: Scope) -> Element {
 }
 
 // filter_servers, generate_config
-fn asd(input: &Input, servers: &Vec<Server>) -> String {
+fn generate_config(input: &Input, servers: &Vec<Server>) -> String {
     let mut servers = servers.clone();
 
     servers.retain(|server| server.status == "online");
@@ -212,6 +210,10 @@ fn asd(input: &Input, servers: &Vec<Server>) -> String {
 
     if input.country != "" || input.city != "" {
         servers.sort_by(|a, b| a.load.cmp(&b.load));
+    }
+
+    if servers.len() == 0 {
+        return String::from("Couldn't find a server that meets the requested conditions.");
     }
 
     format!(
@@ -237,7 +239,7 @@ Endpoint = {0}:51820",
 
 fn make_qrcode(config: &String) -> String {
     let code = QrCode::new(config).unwrap();
-    let image = code.render::<Luma<u8>>().build();
+    let image = code.render::<image::Luma<u8>>().build();
 
     let mut bytes: Vec<u8> = Vec::new();
 
