@@ -19,6 +19,8 @@ asset_dir = "public"
 # HTML title tag content
 title = "nord-wg-gen"
 
+base_path = "nord-wg-gen"
+
 [web.watcher]
 
 index_on_404 = true
