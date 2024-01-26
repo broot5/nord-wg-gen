@@ -192,7 +192,7 @@ fn App(cx: Scope) -> Element {
                 button { "Download" }
             }
         }
-        div { img { src: "data:image/png;base64,{qrcode}" } }
+        div { img { alt: "QR code", src: "data:image/png;base64,{qrcode}" } }
     )
 }
 
