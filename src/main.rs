@@ -1,12 +1,17 @@
+use base64::prelude::*;
+use dioxus::prelude::*;
+use image::Luma;
+use log::LevelFilter;
+use qrcode::QrCode;
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::HashMap;
+use std::io::Cursor;
 
-const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
-const PRIVATE_KEY: &str = "12345privatekey=";
-const DNS: &str = "1.1.1.1";
+//const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
+//const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&limit=99999";
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct Server {
     id: usize,
     name: String,
@@ -31,7 +36,7 @@ impl Server {
             .as_str()
             .unwrap()
     }
-    fn wireguard_public_key(&self) -> &str {
+    fn public_key(&self) -> &str {
         self.technologies[5]["metadata"][0]["value"]
             .as_str()
             .unwrap()
@@ -44,41 +49,201 @@ impl Server {
     }
 }
 
-fn main() {
-    //let content = fs::read_to_string("recommendations.json").expect("Couldn't find or load that file.");
-    //let mut servers: Vec<Server> = serde_json::from_str(&content).expect("Couldn't read json file.");
+#[derive(Debug)]
+struct Input {
+    private_key: String,
+    country: String,
+    city: String,
+    p2p: bool,
+    dns: String,
+}
 
-    let mut servers: Vec<Server> = reqwest::blocking::get(URL).unwrap().json().unwrap();
+fn main() {
+    dioxus_logger::init(LevelFilter::Info).expect("failed to init logger");
+    dioxus_web::launch(App);
+}
+
+#[component]
+fn App(cx: Scope) -> Element {
+    let servers = use_future(cx, (), |_| async move {
+        reqwest::Client::new()
+            //.get(URL)
+            .get("https://corsproxy.io/?https://api.nordvpn.com/v1/servers/recommendations?&limit=99999")
+            //.fetch_mode_no_cors()
+            .send()
+            .await?
+            .json::<Vec<Server>>()
+            //.text()
+            .await
+    });
+
+    let private_key = use_state(cx, || String::new());
+    let country = use_state(cx, || String::new());
+    let city = use_state(cx, || String::new());
+    let p2p = use_state(cx, || true);
+    let dns = use_state(cx, || String::from("1.1.1.1"));
+    let textarea = use_state(cx, || String::new());
+    let qrcode = use_state(cx, || String::new());
+
+    let input = Input {
+        private_key: private_key.to_string(),
+        country: country.to_string(),
+        city: city.to_string(),
+        p2p: **p2p,
+        dns: dns.to_string(),
+    };
+
+    let img_src = format!("data:image/png;base64,{}", qrcode);
+
+    render!(
+        div {
+            "nord-wg-gen"
+        }
+        div {
+            label {
+                r#for: "private_key",
+                "Private Key"
+            }
+            input {
+                id: "private_key",
+                oninput: move |e| {
+                    private_key.set(e.value.clone());
+                },
+                value: "{private_key}"
+            }
+        }
+        div {
+            label {
+                r#for: "country",
+                "Country"
+            }
+            input {
+                id: "country",
+                oninput: move |e| {
+                    country.set(e.value.clone());
+                },
+                value: "{country}"
+            }
+        }
+        div {
+            label {
+                r#for: "city",
+                "City"
+            }
+            input {
+                id: "city",
+                oninput: move |e| {
+                    city.set(e.value.clone());
+                },
+                value: "{city}"
+            }
+        }
+        div {
+            label {
+                r#for: "p2p",
+                "P2P"
+            }
+            input {
+                id: "p2p",
+                r#type: "checkbox",
+                oninput: move |e| {
+                    p2p.set(e.value.trim().parse().unwrap());
+                },
+                checked: "{p2p}"
+            }
+        }
+        div {
+            label {
+                r#for: "dns",
+                "DNS"
+            }
+            input {
+                id: "dns",
+                oninput: move |e| {
+                    dns.set(e.value.clone());
+                },
+                value: "{dns}"
+            }
+        }
+        div {
+            button {
+                onclick: move |_| {
+                    let config = asd(&input, &servers.value().unwrap().as_ref().unwrap());
+
+                    textarea.set(config.clone());
+                    qrcode.set(make_qrcode(&config));
+                },
+                "Generate"
+            }
+        }
+        div {
+            textarea {
+                value: "{textarea}"
+            }
+        }
+        div {
+            button {
+                "Download"
+            }
+        }
+        div {
+            img {
+                src: "{img_src}"
+            }
+        }
+    )
+}
+
+// filter_servers, generate_config
+fn asd(input: &Input, servers: &Vec<Server>) -> String {
+    let mut servers = servers.clone();
 
     servers.retain(|server| server.status == "online");
 
-    // custom
-    servers.retain(|x| x.country_code() == "US");
-    //servers.retain(|x| x.country() == "United States");
-    //servers.retain(|x| x.city() == "Los Angeles");
-    servers.retain(|x| x.is_p2p() == true);
+    if input.country != "" {
+        servers.retain(|x| x.country() == input.country);
+    }
 
-    servers.sort_by(|a, b| a.load.cmp(&b.load));
+    if input.city != "" {
+        servers.retain(|x| x.city() == input.city);
+    }
 
-    let config = format!(
-        "# Configuration for {hostname} ({server_ip}) - {city}, {country}
+    servers.retain(|x| x.is_p2p() == input.p2p);
+
+    if input.country != "" || input.city != "" {
+        servers.sort_by(|a, b| a.load.cmp(&b.load));
+    }
+
+    format!(
+        "# Configuration for {0} ({1}) - {2}, {3}
 [Interface]
 Address = 10.5.0.2/32
-PrivateKey = {private_key}
-DNS = {dns}
+PrivateKey = {5}
+DNS = {6}
 
 [Peer]
-PublicKey = {wireguard_public_key}
+PublicKey = {4}
 AllowedIPs = 0.0.0.0/0
-Endpoint = {hostname}:51820",
-        hostname = &servers[0].hostname,
-        server_ip = &servers[0].station,
-        city = &servers[0].city(),
-        country = &servers[0].country(),
-        private_key = PRIVATE_KEY,
-        dns = DNS,
-        wireguard_public_key = &servers[0].wireguard_public_key(),
-    );
+Endpoint = {0}:51820",
+        servers[0].hostname,
+        servers[0].station,
+        servers[0].city(),
+        servers[0].country(),
+        servers[0].public_key(),
+        input.private_key,
+        input.dns,
+    )
+}
 
-    println!("{config}");
+fn make_qrcode(config: &String) -> String {
+    let code = QrCode::new(config).unwrap();
+    let image = code.render::<Luma<u8>>().build();
+
+    let mut bytes: Vec<u8> = Vec::new();
+
+    image
+        .write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Png)
+        .unwrap();
+
+    base64::engine::general_purpose::STANDARD.encode(&bytes)
 }
