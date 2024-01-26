@@ -10,9 +10,11 @@ use std::io::Cursor;
 //const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
 const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Clone, Deserialize)]
 struct Server {
+    #[allow(dead_code)]
     id: usize,
+    #[allow(dead_code)]
     name: String,
     station: String,
     hostname: String,
