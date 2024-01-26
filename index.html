@@ -10,8 +10,8 @@
 <body>
   <div id="main"></div>
   <script type="module">
-    import init from "/./assets/dioxus/nord-wg-gen.js";
-    init("/./assets/dioxus/nord-wg-gen_bg.wasm").then(wasm => {
+    import init from "/nord-wg-gen/assets/dioxus/nord-wg-gen.js";
+    init("/nord-wg-gen/assets/dioxus/nord-wg-gen_bg.wasm").then(wasm => {
       if (wasm.__wbindgen_start == undefined) {
         wasm.main();
       }
