@@ -1,8 +1,8 @@
 # nord-wg-gen
 
 ## Todo
-[ ] Implementing a Proxy to Bypass CORS
-[ ] Design
+- [ ] Implementing a Proxy to Bypass CORS
+- [ ] Design
 
 ## Build
 ```
