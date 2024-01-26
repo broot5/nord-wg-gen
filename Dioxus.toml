@@ -9,7 +9,7 @@ name = "nord-wg-gen"
 default_platform = "web"
 
 # Web `build` & `serve` dist path
-out_dir = "docs"
+out_dir = "dist"
 
 # resource (static) file folder
 asset_dir = "public"
@@ -18,8 +18,6 @@ asset_dir = "public"
 
 # HTML title tag content
 title = "nord-wg-gen"
-
-base_path = "nord-wg-gen"
 
 [web.watcher]
 
