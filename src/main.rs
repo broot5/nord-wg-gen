@@ -82,6 +82,7 @@ fn App(cx: Scope) -> Element {
     let dns = use_state(cx, || String::from("1.1.1.1"));
     let textarea = use_state(cx, || String::new());
     let qrcode = use_state(cx, || String::new());
+    let file_name = use_state(cx, || String::new());
 
     let input = Input {
         private_key: private_key.to_string(),
@@ -90,8 +91,6 @@ fn App(cx: Scope) -> Element {
         p2p: **p2p,
         dns: dns.to_string(),
     };
-
-    let img_src = format!("data:image/png;base64,{}", qrcode);
 
     render!(
         div { "nord-wg-gen" }
@@ -148,21 +147,30 @@ fn App(cx: Scope) -> Element {
         }
         div {
             button { onclick: move |_| {
-                    let config = generate_config(&input, &servers.value().unwrap().as_ref().unwrap());
+                    let server = filter_servers(&input, servers.value().unwrap().as_ref().unwrap());
+                    let config = generate_config(&input, &server);
                     textarea.set(config.clone());
                     qrcode.set(make_qrcode(&config));
+                    file_name.set(server.hostname);
                 },
                 "Generate"
             }
         }
         div { textarea { value: "{textarea}" } }
-        div { button { "Download" } }
-        div { img { src: "{img_src}" } }
+        div {
+            a {
+                href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(textarea.get())}",
+                download: "{file_name}.conf",
+                button {
+                    "Download"
+                }
+            }
+        }
+        div { img { src: "data:image/png;base64,{qrcode}" } }
     )
 }
 
-// filter_servers, generate_config
-fn generate_config(input: &Input, servers: &Vec<Server>) -> String {
+fn filter_servers(input: &Input, servers: &Vec<Server>) -> Server {
     let mut servers = servers.clone();
 
     servers.retain(|server| server.status == "online");
@@ -182,9 +190,13 @@ fn generate_config(input: &Input, servers: &Vec<Server>) -> String {
     }
 
     if servers.len() == 0 {
-        return String::from("Couldn't find a server that meets the requested conditions.");
+        //Error should be handled
     }
 
+    servers[0].clone()
+}
+
+fn generate_config(input: &Input, server: &Server) -> String {
     format!(
         "# Configuration for {0} ({1}) - {2}, {3}
 [Interface]
@@ -196,11 +208,11 @@ DNS = {6}
 PublicKey = {4}
 AllowedIPs = 0.0.0.0/0
 Endpoint = {0}:51820",
-        servers[0].hostname,
-        servers[0].station,
-        servers[0].city(),
-        servers[0].country(),
-        servers[0].public_key(),
+        server.hostname,
+        server.station,
+        server.city(),
+        server.country(),
+        server.public_key(),
         input.private_key,
         input.dns,
     )
