@@ -94,14 +94,9 @@ fn App(cx: Scope) -> Element {
     let img_src = format!("data:image/png;base64,{}", qrcode);
 
     render!(
+        div { "nord-wg-gen" }
         div {
-            "nord-wg-gen"
-        }
-        div {
-            label {
-                r#for: "private_key",
-                "Private Key"
-            }
+            label { r#for: "private_key", "Private Key" }
             input {
                 id: "private_key",
                 oninput: move |e| {
@@ -111,10 +106,7 @@ fn App(cx: Scope) -> Element {
             }
         }
         div {
-            label {
-                r#for: "country",
-                "Country"
-            }
+            label { r#for: "country", "Country" }
             input {
                 id: "country",
                 oninput: move |e| {
@@ -124,10 +116,7 @@ fn App(cx: Scope) -> Element {
             }
         }
         div {
-            label {
-                r#for: "city",
-                "City"
-            }
+            label { r#for: "city", "City" }
             input {
                 id: "city",
                 oninput: move |e| {
@@ -137,10 +126,7 @@ fn App(cx: Scope) -> Element {
             }
         }
         div {
-            label {
-                r#for: "p2p",
-                "P2P"
-            }
+            label { r#for: "p2p", "P2P" }
             input {
                 id: "p2p",
                 r#type: "checkbox",
@@ -151,10 +137,7 @@ fn App(cx: Scope) -> Element {
             }
         }
         div {
-            label {
-                r#for: "dns",
-                "DNS"
-            }
+            label { r#for: "dns", "DNS" }
             input {
                 id: "dns",
                 oninput: move |e| {
@@ -164,31 +147,17 @@ fn App(cx: Scope) -> Element {
             }
         }
         div {
-            button {
-                onclick: move |_| {
+            button { onclick: move |_| {
                     let config = generate_config(&input, &servers.value().unwrap().as_ref().unwrap());
-
                     textarea.set(config.clone());
                     qrcode.set(make_qrcode(&config));
                 },
                 "Generate"
             }
         }
-        div {
-            textarea {
-                value: "{textarea}"
-            }
-        }
-        div {
-            button {
-                "Download"
-            }
-        }
-        div {
-            img {
-                src: "{img_src}"
-            }
-        }
+        div { textarea { value: "{textarea}" } }
+        div { button { "Download" } }
+        div { img { src: "{img_src}" } }
     )
 }
 
