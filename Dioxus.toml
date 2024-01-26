@@ -31,7 +31,9 @@ watch_path = ["src", "examples"]
 [web.resource]
 
 # CSS style file
-style = []
+style = [
+    "https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css"
+]
 
 # Javascript code file
 script = []

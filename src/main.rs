@@ -97,7 +97,7 @@ fn App(cx: Scope) -> Element {
     };
 
     render!(
-        div { "nord-wg-gen" }
+        h1 { "nord-wg-gen" }
         div {
             label { r#for: "private_key", "Private Key" }
             input {
