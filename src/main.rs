@@ -75,15 +75,15 @@ fn App(cx: Scope) -> Element {
             .await
     });
 
-    let private_key = use_state(cx, || String::new());
-    let country = use_state(cx, || String::new());
-    let country_code = use_state(cx, || String::new());
-    let city = use_state(cx, || String::new());
+    let private_key = use_state(cx, String::new);
+    let country = use_state(cx, String::new);
+    let country_code = use_state(cx, String::new);
+    let city = use_state(cx, String::new);
     let p2p = use_state(cx, || true);
     let dns = use_state(cx, || String::from("1.1.1.1"));
-    let textarea = use_state(cx, || String::new());
-    let qrcode = use_state(cx, || String::new());
-    let file_name = use_state(cx, || String::new());
+    let textarea = use_state(cx, String::new);
+    let qrcode = use_state(cx, String::new);
+    let file_name = use_state(cx, String::new);
 
     let input = Input {
         private_key: private_key.to_string(),
@@ -194,30 +194,30 @@ fn App(cx: Scope) -> Element {
     )
 }
 
-fn filter_servers(input: &Input, servers: &Vec<Server>) -> Server {
-    let mut servers = servers.clone();
+fn filter_servers(input: &Input, servers: &[Server]) -> Server {
+    let mut servers = servers.to_owned();
 
     servers.retain(|server| server.status == "online");
 
-    if input.country != "" {
+    if !input.country.is_empty() {
         servers.retain(|x| x.country() == input.country);
     }
 
-    if input.country_code != "" {
+    if !input.country_code.is_empty() {
         servers.retain(|x| x.country_code() == input.country_code);
     }
 
-    if input.city != "" {
+    if !input.city.is_empty() {
         servers.retain(|x| x.city() == input.city);
     }
 
     servers.retain(|x| x.is_p2p() == input.p2p);
 
-    if input.country != "" || input.country_code != "" || input.city != "" {
+    if !input.country.is_empty() || !input.country_code.is_empty() || !input.city.is_empty() {
         servers.sort_by(|a, b| a.load.cmp(&b.load));
     }
 
-    if servers.len() == 0 {
+    if servers.is_empty() {
         //Error should be handled
     }
 
