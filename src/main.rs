@@ -158,20 +158,10 @@ fn App(cx: Scope) -> Element {
                 list: "dns_list",
                 value: "{dns}"
             }
-            datalist {
-                id: "dns_list",
-                option {
-                    value: "1.1.1.1",
-                    "Cloudflare(1.1.1.1)"
-                }
-                option {
-                    value: "9.9.9.9",
-                    "Quad9(9.9.9.9)"
-                }
-                option {
-                    value: "194.242.2.2",
-                    "MullvadDNS(194.242.2.2)"
-                }
+            datalist { id: "dns_list",
+                option { value: "1.1.1.1", "Cloudflare(1.1.1.1)" }
+                option { value: "9.9.9.9", "Quad9(9.9.9.9)" }
+                option { value: "194.242.2.2", "MullvadDNS(194.242.2.2)" }
             }
         }
         div {
