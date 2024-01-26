@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 
 //const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
-//const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&limit=99999";
+const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
 
 #[derive(Debug, Deserialize, Clone)]
 struct Server {
@@ -66,8 +66,7 @@ fn main() {
 fn App(cx: Scope) -> Element {
     let servers = use_future(cx, (), |_| async move {
         reqwest::Client::new()
-            //.get(URL)
-            .get("https://corsproxy.io/?https://api.nordvpn.com/v1/servers/recommendations?&limit=99999")
+            .get(URL)
             //.fetch_mode_no_cors()
             .send()
             .await?
@@ -98,6 +97,7 @@ fn App(cx: Scope) -> Element {
             label { r#for: "private_key", "Private Key" }
             input {
                 id: "private_key",
+                r#type: "password",
                 oninput: move |e| {
                     private_key.set(e.value.clone());
                 },
@@ -147,23 +147,28 @@ fn App(cx: Scope) -> Element {
         }
         div {
             button { onclick: move |_| {
-                    let server = filter_servers(&input, servers.value().unwrap().as_ref().unwrap());
-                    let config = generate_config(&input, &server);
-                    textarea.set(config.clone());
-                    qrcode.set(make_qrcode(&config));
-                    file_name.set(server.hostname);
+                    match servers.value() {
+                        Some(Ok(r)) => {
+                            let server = filter_servers(&input, r);
+                            let config = generate_config(&input, &server);
+                            textarea.set(config.clone());
+                            qrcode.set(make_qrcode(&config));
+                            file_name.set(server.hostname);
+                        }
+                        Some(Err(_)) => {}
+                        None => {}
+                    }
                 },
                 "Generate"
             }
         }
+
         div { textarea { value: "{textarea}" } }
         div {
             a {
                 href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(textarea.get())}",
                 download: "{file_name}.conf",
-                button {
-                    "Download"
-                }
+                button { "Download" }
             }
         }
         div { img { src: "data:image/png;base64,{qrcode}" } }
