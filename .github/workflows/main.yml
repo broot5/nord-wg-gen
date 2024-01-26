@@ -25,6 +25,10 @@ jobs:
       - name: Build
         run: dx build --release
       
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
