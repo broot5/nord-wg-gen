@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 
 //const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
-const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
+const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers?&limit=99999";
 
 #[derive(Clone, Deserialize)]
 struct Server {
@@ -199,7 +199,9 @@ fn App(cx: Scope) -> Element {
 fn filter_servers(input: &Input, servers: &[Server]) -> Server {
     let mut servers = servers.to_owned();
 
-    servers.retain(|server| server.status == "online");
+    servers.retain(|x| x.technologies.get(5).is_some());
+
+    servers.retain(|x| x.status == "online");
 
     if !input.country.is_empty() {
         servers.retain(|x| x.country() == input.country);
