@@ -171,11 +171,19 @@ fn App(cx: Scope) -> Element {
             button { onclick: move |_| {
                     match servers.value() {
                         Some(Ok(r)) => {
-                            let server = filter_servers(&input, r);
-                            let config = generate_config(&input, &server);
-                            textarea.set(config.clone());
-                            qrcode.set(make_qrcode(&config));
-                            file_name.set(server.hostname);
+                            if let Some(server) = filter_servers(&input, r) {
+                                let config = generate_config(&input, &server);
+                                textarea.set(config.clone());
+                                qrcode.set(make_qrcode(&config));
+                                file_name.set(server.hostname);
+                            } else {
+                                textarea
+                                    .set(
+                                        String::from(
+                                            "Couldn't find server that meets the requested conditions.",
+                                        ),
+                                    );
+                            }
                         }
                         Some(Err(_)) => {}
                         None => {}
@@ -197,7 +205,7 @@ fn App(cx: Scope) -> Element {
     )
 }
 
-fn filter_servers(input: &Input, servers: &[Server]) -> Server {
+fn filter_servers(input: &Input, servers: &[Server]) -> Option<Server> {
     let mut servers = servers.to_owned();
 
     servers.retain(|x| x.is_wireguard());
@@ -222,11 +230,10 @@ fn filter_servers(input: &Input, servers: &[Server]) -> Server {
         servers.sort_by(|a, b| a.load.cmp(&b.load));
     }
 
-    if servers.is_empty() {
-        //Error should be handled
+    match servers.is_empty() {
+        true => None,
+        false => Some(servers[0].clone()),
     }
-
-    servers[0].clone()
 }
 
 fn generate_config(input: &Input, server: &Server) -> String {
