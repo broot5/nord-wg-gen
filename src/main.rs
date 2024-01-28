@@ -226,9 +226,7 @@ fn filter_servers(input: &Input, servers: &[Server]) -> Option<Server> {
 
     servers.retain(|x| x.is_p2p() == input.p2p);
 
-    if !input.country.is_empty() || !input.country_code.is_empty() || !input.city.is_empty() {
-        servers.sort_by(|a, b| a.load.cmp(&b.load));
-    }
+    servers.sort_by(|a, b| a.load.cmp(&b.load));
 
     match servers.is_empty() {
         true => None,
