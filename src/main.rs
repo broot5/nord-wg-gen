@@ -18,7 +18,7 @@ struct Server {
     name: String,
     station: String,
     hostname: String,
-    load: usize,
+    load: u8,
     status: String,
     locations: Vec<Value>,
     technologies: Vec<Value>,
@@ -43,10 +43,7 @@ impl Server {
             .unwrap()
     }
     fn is_p2p(&self) -> bool {
-        self.groups[1]
-            .get("id")
-            .expect("Couldn't parse server's p2p info")
-            == 15
+        self.groups[1].get("id").unwrap() == 15
     }
     fn is_wireguard(&self) -> bool {
         self.technologies.get(5).is_some()
