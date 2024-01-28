@@ -6,6 +6,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::io::Cursor;
+use std::net::Ipv4Addr;
 
 //const URL: &str = "https://api.nordvpn.com/v1/servers?&limit=99999";
 const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers?&limit=99999";
@@ -16,7 +17,7 @@ struct Server {
     id: usize,
     #[allow(dead_code)]
     name: String,
-    station: String,
+    station: Ipv4Addr,
     hostname: String,
     load: u8,
     status: String,
