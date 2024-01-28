@@ -7,7 +7,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::io::Cursor;
 
-//const URL: &str = "https://api.nordvpn.com/v1/servers/recommendations?&filters\\[servers_technologies\\]\\[identifier\\]=wireguard_udp&limit=99999";
+//const URL: &str = "https://api.nordvpn.com/v1/servers?&limit=99999";
 const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers?&limit=99999";
 
 #[derive(Clone, Deserialize)]
@@ -48,9 +48,11 @@ impl Server {
             .expect("Couldn't parse server's p2p info")
             == 15
     }
+    fn is_wireguard(&self) -> bool {
+        self.technologies.get(5).is_some()
+    }
 }
 
-#[derive(Debug)]
 struct Input {
     private_key: String,
     country: String,
@@ -70,7 +72,6 @@ fn App(cx: Scope) -> Element {
     let servers = use_future(cx, (), |_| async move {
         reqwest::Client::new()
             .get(URL)
-            //.fetch_mode_no_cors()
             .send()
             .await?
             .json::<Vec<Server>>()
@@ -199,7 +200,7 @@ fn App(cx: Scope) -> Element {
 fn filter_servers(input: &Input, servers: &[Server]) -> Server {
     let mut servers = servers.to_owned();
 
-    servers.retain(|x| x.technologies.get(5).is_some());
+    servers.retain(|x| x.is_wireguard());
 
     servers.retain(|x| x.status == "online");
 
