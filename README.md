@@ -1,7 +1,9 @@
 # nord-wg-gen
 
+https://broot5.github.io/nord-wg-gen/
+
 ## Build
-```bash
+```console
 rustup target add wasm32-unknown-unknown
 cargo install dioxus-cli
 
