@@ -78,9 +78,9 @@ pub fn filter_servers(input: &Input, servers: &[Server]) -> Option<Server> {
 
     servers.sort_by(|a, b| a.load.cmp(&b.load));
 
-    match servers.is_empty() {
+    match servers.is_empty() || servers.get(input.server_index).is_none() {
         true => None,
-        false => Some(servers[0].clone()),
+        false => Some(servers.get(input.server_index).unwrap().clone()),
     }
 }
 

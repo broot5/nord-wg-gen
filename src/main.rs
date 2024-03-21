@@ -14,6 +14,7 @@ struct Input {
     city: String,
     p2p: bool,
     dns: String,
+    server_index: usize,
 }
 
 fn main() {
@@ -38,6 +39,8 @@ fn App(cx: Scope) -> Element {
     let city = use_state(cx, String::new);
     let p2p = use_state(cx, || true);
     let dns = use_state(cx, || String::from("1.1.1.1"));
+    let server_index = use_state(cx, || 0);
+
     let textarea = use_state(cx, String::new);
     let qrcode_bytes = use_state(cx, Vec::new);
     let server_identifier = use_state(cx, String::new);
@@ -49,6 +52,7 @@ fn App(cx: Scope) -> Element {
         city: city.to_string(),
         p2p: **p2p,
         dns: dns.to_string(),
+        server_index: *server_index.get(),
     };
 
     render!(
@@ -122,7 +126,16 @@ fn App(cx: Scope) -> Element {
             }
         }
         div {
-            button { onclick: move |_| {
+            input {
+                r#type: "number",
+                oninput: move |e| { server_index.set(e.value.trim().parse().unwrap_or_default()) },
+                min: "0",
+                step: "1",
+                pattern: "[0-9]{10}",
+                value: "{server_index}"
+            }
+            button {
+                onclick: move |_| {
                     match servers.value() {
                         Some(Ok(r)) => {
                             if let Some(server) = filter_servers(&input, r) {
