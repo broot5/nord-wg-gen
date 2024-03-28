@@ -19,12 +19,14 @@ struct Input {
 
 fn main() {
     dioxus_logger::init(log::LevelFilter::Info).expect("failed to init logger");
-    dioxus_web::launch(App);
+    console_error_panic_hook::set_once();
+
+    launch(App);
 }
 
 #[component]
-fn App(cx: Scope) -> Element {
-    let servers = use_future(cx, (), |_| async move {
+fn App() -> Element {
+    let servers = use_resource(move || async move {
         reqwest::Client::new()
             .get(URL)
             .send()
@@ -33,29 +35,29 @@ fn App(cx: Scope) -> Element {
             .await
     });
 
-    let private_key = use_state(cx, String::new);
-    let country = use_state(cx, String::new);
-    let country_code = use_state(cx, String::new);
-    let city = use_state(cx, String::new);
-    let p2p = use_state(cx, || true);
-    let dns = use_state(cx, || String::from("1.1.1.1"));
-    let server_index = use_state(cx, || 0);
+    let mut private_key = use_signal(String::new);
+    let mut country = use_signal(String::new);
+    let mut country_code = use_signal(String::new);
+    let mut city = use_signal(String::new);
+    let mut p2p = use_signal(|| true);
+    let mut dns = use_signal(|| String::from("1.1.1.1"));
+    let mut server_index = use_signal(|| 0);
 
-    let textarea = use_state(cx, String::new);
-    let qrcode_bytes = use_state(cx, Vec::new);
-    let server_identifier = use_state(cx, String::new);
+    let mut textarea = use_signal(String::new);
+    let mut qrcode_bytes = use_signal(Vec::new);
+    let mut server_identifier = use_signal(String::new);
 
     let input = Input {
         private_key: private_key.to_string(),
         country: country.to_string(),
         country_code: country_code.to_string(),
         city: city.to_string(),
-        p2p: **p2p,
+        p2p: *p2p.read(),
         dns: dns.to_string(),
-        server_index: *server_index.get(),
+        server_index: *server_index.read(),
     };
 
-    render!(
+    rsx! {
         h1 { a { href: "https://github.com/broot5/nord-wg-gen", "nord-wg-gen" } }
         div {
             label { r#for: "private_key", "Private Key" }
@@ -63,7 +65,7 @@ fn App(cx: Scope) -> Element {
                 id: "private_key",
                 r#type: "password",
                 oninput: move |e| {
-                    private_key.set(e.value.clone());
+                    private_key.set(e.value());
                 },
                 value: "{private_key}"
             }
@@ -73,7 +75,7 @@ fn App(cx: Scope) -> Element {
             input {
                 id: "country",
                 oninput: move |e| {
-                    country.set(e.value.clone());
+                    country.set(e.value());
                 },
                 value: "{country}"
             }
@@ -83,7 +85,7 @@ fn App(cx: Scope) -> Element {
             input {
                 id: "country_code",
                 oninput: move |e| {
-                    country_code.set(e.value.clone().to_uppercase());
+                    country_code.set(e.value().to_uppercase());
                 },
                 value: "{country_code}"
             }
@@ -93,7 +95,7 @@ fn App(cx: Scope) -> Element {
             input {
                 id: "city",
                 oninput: move |e| {
-                    city.set(e.value.clone());
+                    city.set(e.value());
                 },
                 value: "{city}"
             }
@@ -104,7 +106,7 @@ fn App(cx: Scope) -> Element {
                 id: "p2p",
                 r#type: "checkbox",
                 oninput: move |e| {
-                    p2p.set(e.value.trim().parse().unwrap());
+                    p2p.set(e.value().trim().parse().unwrap());
                 },
                 checked: "{p2p}"
             }
@@ -114,7 +116,7 @@ fn App(cx: Scope) -> Element {
             input {
                 id: "dns",
                 oninput: move |e| {
-                    dns.set(e.value.clone());
+                    dns.set(e.value());
                 },
                 list: "dns_list",
                 value: "{dns}"
@@ -128,7 +130,7 @@ fn App(cx: Scope) -> Element {
         div {
             input {
                 r#type: "number",
-                oninput: move |e| { server_index.set(e.value.trim().parse().unwrap_or_default()) },
+                oninput: move |e| { server_index.set(e.value().trim().parse().unwrap_or_default()) },
                 min: "0",
                 step: "1",
                 pattern: "[0-9]{10}",
@@ -136,7 +138,7 @@ fn App(cx: Scope) -> Element {
             }
             button {
                 onclick: move |_| {
-                    match servers.value() {
+                    match &*servers.read_unchecked() {
                         Some(Ok(r)) => {
                             if let Some(server) = filter_servers(&input, r) {
                                 let config = generate_config(&input, &server);
@@ -163,7 +165,7 @@ fn App(cx: Scope) -> Element {
         div { textarea { value: "{textarea}" } }
         div {
             a {
-                href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(textarea.get())}",
+                href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(&*textarea.read())}",
                 download: "nord-{server_identifier}.conf",
                 button { "Download" }
             }
@@ -171,8 +173,8 @@ fn App(cx: Scope) -> Element {
         div {
             img {
                 alt: "QR Code",
-                src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(qrcode_bytes.get())}"
+                src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(&*qrcode_bytes.read())}"
             }
         }
-    )
+    }
 }

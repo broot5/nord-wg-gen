@@ -1,18 +1,17 @@
 [application]
 
-# dioxus project name
+# App (Project) Name
 name = "nord-wg-gen"
 
-# default platfrom
-# you can also use `dx serve/build --platform XXX` to use other platform
-# value: web | desktop
+# Dioxus App Default Platform
+# desktop, web
 default_platform = "web"
 
-# Web `build` & `serve` dist path
+# `build` & `serve` dist path
 out_dir = "dist"
 
-# resource (static) file folder
-asset_dir = "public"
+# resource (assets) file folder
+asset_dir = "assets"
 
 [web.app]
 
@@ -25,7 +24,11 @@ base_path = "nord-wg-gen"
 
 index_on_404 = true
 
-watch_path = ["src", "examples"]
+# when watcher trigger, regenerate the `index.html`
+reload_html = true
+
+# which files or dirs will be watcher monitoring
+watch_path = ["src", "assets"]
 
 # include `assets` in web platform
 [web.resource]
@@ -43,36 +46,3 @@ script = []
 # Javascript code file
 # serve: [dev-server] only
 script = []
-
-[application.plugins]
-
-available = true
-
-required = []
-
-[bundler]
-# Bundle identifier
-identifier = "io.github.nord-wg-gen"
-
-# Bundle publisher
-publisher = "nord-wg-gen"
-
-# Bundle icon
-icon = ["icons/icon.png"]
-
-# Bundle resources
-resources = ["public/*"]
-
-# Bundle copyright
-copyright = ""
-
-# Bundle category
-category = "Utility"
-
-# Bundle short description
-short_description = "An amazing dioxus application."
-
-# Bundle long description
-long_description = """
-An amazing dioxus application.
-"""
