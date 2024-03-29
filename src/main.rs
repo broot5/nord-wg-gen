@@ -162,7 +162,7 @@ fn App() -> Element {
             }
         }
 
-        div { textarea { value: "{textarea}" } }
+        div { textarea { value: "{textarea}", readonly: "true" } }
         div {
             a {
                 href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(&*textarea.read())}",
