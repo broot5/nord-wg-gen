@@ -113,7 +113,7 @@ pub fn make_qrcode(config: &String) -> Vec<u8> {
     let mut bytes: Vec<u8> = Vec::new();
 
     image
-        .write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Png)
+        .write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)
         .unwrap();
 
     bytes
