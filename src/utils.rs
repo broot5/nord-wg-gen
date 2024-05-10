@@ -91,6 +91,7 @@ pub fn generate_config(input: &Input, server: &Server) -> String {
 Address = 10.5.0.2/32
 PrivateKey = {5}
 DNS = {6}
+MTU = {7}
 
 [Peer]
 PublicKey = {4}
@@ -103,6 +104,7 @@ Endpoint = {0}:51820",
         server.public_key(),
         input.private_key,
         input.dns,
+        input.mtu,
     )
 }
 

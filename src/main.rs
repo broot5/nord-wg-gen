@@ -14,6 +14,7 @@ struct Input {
     city: String,
     p2p: bool,
     dns: String,
+    mtu: String,
     server_index: usize,
 }
 
@@ -41,6 +42,7 @@ fn App() -> Element {
     let mut city = use_signal(String::new);
     let mut p2p = use_signal(|| true);
     let mut dns = use_signal(|| String::from("1.1.1.1"));
+    let mut mtu = use_signal(|| String::from("1420"));
     let mut server_index = use_signal(|| 0);
 
     let mut textarea = use_signal(String::new);
@@ -54,6 +56,7 @@ fn App() -> Element {
         city: city.to_string(),
         p2p: *p2p.read(),
         dns: dns.to_string(),
+        mtu: mtu.to_string(),
         server_index: *server_index.read(),
     };
 
@@ -125,6 +128,16 @@ fn App() -> Element {
                 option { value: "1.1.1.1", "Cloudflare(1.1.1.1)" }
                 option { value: "9.9.9.9", "Quad9(9.9.9.9)" }
                 option { value: "194.242.2.2", "MullvadDNS(194.242.2.2)" }
+            }
+        }
+        div {
+            label { r#for: "mtu", "MTU" }
+            input {
+                id: "mtu",
+                oninput: move |e| {
+                    mtu.set(e.value());
+                },
+                value: "{mtu}"
             }
         }
         div {
