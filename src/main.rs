@@ -1,8 +1,9 @@
+mod components;
 mod utils;
 
-use base64::prelude::*;
 use dioxus::prelude::*;
 
+use components::*;
 use utils::*;
 
 const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers?&limit=99999";
@@ -61,46 +62,53 @@ fn App() -> Element {
     };
 
     rsx! {
-        h1 { a { href: "https://github.com/broot5/nord-wg-gen", "nord-wg-gen" } }
+        header {
+            nav {
+                h1 {
+                    a { href: "https://github.com/broot5/nord-wg-gen", "nord-wg-gen" }
+                }
+            }
+        }
         div {
-            label { r#for: "private_key", "Private Key" }
-            input {
+            FormField {
                 id: "private_key",
-                r#type: "password",
-                oninput: move |e| {
-                    private_key.set(e.value());
-                },
-                value: "{private_key}"
+                label_text: "Private Key",
+                input_type: "password",
+                value: private_key,
+                oninput: move |event: FormEvent| {
+                    private_key.set(event.value());
+                }
             }
         }
         div {
-            label { r#for: "country", "Country" }
-            input {
+            FormField {
                 id: "country",
-                oninput: move |e| {
-                    country.set(e.value());
-                },
-                value: "{country}"
+                label_text: "Country",
+                input_type: "text",
+                value: country,
+                oninput: move |event: FormEvent| {
+                    country.set(event.value());
+                }
             }
-        }
-        div {
-            label { r#for: "country_code", "Country code" }
-            input {
+            FormField {
                 id: "country_code",
-                oninput: move |e| {
-                    country_code.set(e.value().to_uppercase());
-                },
-                value: "{country_code}"
+                label_text: "Country Code",
+                input_type: "text",
+                value: country_code,
+                oninput: move |event: FormEvent| {
+                    country_code.set(event.value());
+                }
             }
         }
         div {
-            label { r#for: "city", "City" }
-            input {
+            FormField {
                 id: "city",
-                oninput: move |e| {
-                    city.set(e.value());
-                },
-                value: "{city}"
+                label_text: "City",
+                input_type: "text",
+                value: city,
+                oninput: move |event: FormEvent| {
+                    city.set(event.value());
+                }
             }
         }
         div {
@@ -121,8 +129,8 @@ fn App() -> Element {
                 oninput: move |e| {
                     dns.set(e.value());
                 },
-                list: "dns_list",
-                value: "{dns}"
+                value: "{dns}",
+                list: "dns_list"
             }
             datalist { id: "dns_list",
                 option { value: "1.1.1.1", "Cloudflare(1.1.1.1)" }
@@ -131,24 +139,31 @@ fn App() -> Element {
             }
         }
         div {
-            label { r#for: "mtu", "MTU" }
-            input {
+            FormField {
                 id: "mtu",
-                oninput: move |e| {
-                    mtu.set(e.value());
-                },
-                value: "{mtu}"
+                label_text: "MTU",
+                input_type: "text",
+                value: mtu,
+                oninput: move |event: FormEvent| {
+                    mtu.set(event.value());
+                }
             }
         }
         div {
+            label { r#for: "serve_index", "Server Index" }
             input {
+                id: "server_index",
                 r#type: "number",
-                oninput: move |e| { server_index.set(e.value().trim().parse().unwrap_or_default()) },
+                oninput: move |e| {
+                    server_index.set(e.value().trim().parse().unwrap_or_default());
+                },
                 min: "0",
                 step: "1",
                 pattern: "[0-9]{10}",
                 value: "{server_index}"
             }
+        }
+        div {
             button {
                 onclick: move |_| {
                     match &*servers.read_unchecked() {
@@ -175,19 +190,14 @@ fn App() -> Element {
             }
         }
 
-        div { textarea { value: "{textarea}", readonly: "true" } }
         div {
-            a {
-                href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(&*textarea.read())}",
-                download: "nord-{server_identifier}.conf",
-                button { "Download" }
-            }
+            textarea { value: "{textarea}", readonly: "true" }
         }
         div {
-            img {
-                alt: "QR Code",
-                src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(&*qrcode_bytes.read())}"
-            }
+            DownloadButton { textarea, server_identifier }
+        }
+        div {
+            QRCode { bytes: qrcode_bytes() }
         }
     }
 }
