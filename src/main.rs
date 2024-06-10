@@ -19,7 +19,7 @@ struct Input {
 }
 
 fn main() {
-    dioxus_logger::init(log::LevelFilter::Info).expect("failed to init logger");
+    dioxus_logger::init(dioxus_logger::tracing::Level::INFO).expect("failed to init logger");
     console_error_panic_hook::set_once();
 
     launch(App);
@@ -27,7 +27,7 @@ fn main() {
 
 #[component]
 fn App() -> Element {
-    let servers = use_resource(move || async move {
+    let servers: Resource<Result<Vec<Server>, reqwest::Error>> = use_resource(move || async move {
         reqwest::Client::new()
             .get(URL)
             .send()

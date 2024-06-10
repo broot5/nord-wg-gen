@@ -9,7 +9,7 @@ edition = "2021"
 base64 = "0.22"
 console_error_panic_hook = "0.1"
 dioxus = { version = "0.5", features = ["web"] }
-dioxus-logger = "0.4"
+dioxus-logger = "0.5"
 image = "0.25"
 log = "0.4"
 qrcode = "0.14"
