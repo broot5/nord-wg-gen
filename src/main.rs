@@ -96,7 +96,7 @@ fn App() -> Element {
                 input_type: "text",
                 value: country_code,
                 oninput: move |event: FormEvent| {
-                    country_code.set(event.value());
+                    country_code.set(event.value().to_uppercase());
                 }
             }
         }
@@ -194,7 +194,7 @@ fn App() -> Element {
             textarea { value: "{textarea}", readonly: "true" }
         }
         div {
-            DownloadButton { textarea, server_identifier }
+            DownloadButton { config: textarea, server_identifier }
         }
         div {
             QRCode { bytes: qrcode_bytes() }

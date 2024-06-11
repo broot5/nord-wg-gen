@@ -16,17 +16,17 @@ pub fn FormField(
             id: id.clone(),
             r#type: input_type,
             oninput: move |event| { oninput.call(event) },
-            value: value,
+            value,
             list: list.unwrap_or_default()
         }
     }
 }
 
 #[component]
-pub fn DownloadButton(textarea: String, server_identifier: String) -> Element {
+pub fn DownloadButton(config: String, server_identifier: String) -> Element {
     rsx! {
         a {
-            href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(&*textarea)}",
+            href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(config)}",
             download: "nord-{server_identifier}.conf",
             button { "Download" }
         }
@@ -38,7 +38,7 @@ pub fn QRCode(bytes: Vec<u8>) -> Element {
     rsx! {
         img {
             alt: "QR Code",
-            src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(&*bytes)}"
+            src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(bytes)}"
         }
     }
 }
