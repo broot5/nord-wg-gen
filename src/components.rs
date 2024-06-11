@@ -95,20 +95,18 @@ pub fn InputForm() -> Element {
 
 #[component]
 pub fn FormField(
-    id: String,
-    label_text: String,
-    input_type: String,
+    id: &'static str,
+    label_text: &'static str,
+    input_type: &'static str,
     value: String,
     oninput: EventHandler<FormEvent>,
 ) -> Element {
     rsx! {
-        label { r#for: id.clone(), "{label_text}" }
+        label { r#for: id, "{label_text}" }
         input {
-            id: id.clone(),
+            id,
             r#type: input_type,
-            oninput: move |event| {
-                spawn(async move { oninput.call(event) });
-            },
+            oninput: move |event| { oninput.call(event) },
             value
         }
     }
@@ -129,14 +127,21 @@ pub fn ServerList() -> Element {
 
     match &*servers_resource.read_unchecked() {
         Some(Ok(servers)) => {
-            let mut servers = filter_servers(&input(), servers);
-            if servers.len() >= 20 {
-                servers = servers[..20].to_vec()
+            let filtered_servers = filter_servers(&input(), servers);
+
+            if filtered_servers.is_empty() {
+                return rsx! { "Couldn't find server that meets the requested conditions." };
             }
-            rsx! {
-                for server in servers {
+
+            let servers_iter = filtered_servers.iter().take(20);
+            let servers_rendered = servers_iter.map(|server| {
+                rsx! {
                     ServerInfo { input: input(), server: server.clone() }
                 }
+            });
+
+            rsx! {
+                {servers_rendered}
             }
         }
         Some(Err(err)) => {
@@ -149,6 +154,7 @@ pub fn ServerList() -> Element {
 #[component]
 pub fn ServerInfo(input: Input, server: Server) -> Element {
     let mut output = use_context::<Signal<Output>>();
+
     rsx! {
         div {
             button {
@@ -175,7 +181,7 @@ pub fn Result() -> Element {
     rsx! {
         textarea { value: "{output.read().config}", readonly: "true" }
         DownloadButton {
-            string: output.read().config.clone(),
+            string: "{output.read().config}",
             file_name: "nord-{output.read().server_identifier}.conf"
         }
         QRCode { bytes: output.read().qrcode_bytes.clone() }
