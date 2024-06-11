@@ -5,27 +5,6 @@ use crate::utils::*;
 use crate::{Input, Output, URL};
 
 #[component]
-pub fn FormField(
-    id: String,
-    label_text: String,
-    input_type: String,
-    value: String,
-    oninput: EventHandler<FormEvent>,
-) -> Element {
-    rsx! {
-        label { r#for: id.clone(), "{label_text}" }
-        input {
-            id: id.clone(),
-            r#type: input_type,
-            oninput: move |event| {
-                spawn(async move { oninput.call(event) });
-            },
-            value
-        }
-    }
-}
-
-#[component]
 pub fn InputForm() -> Element {
     let mut input = use_context::<Signal<Input>>();
 
@@ -115,36 +94,22 @@ pub fn InputForm() -> Element {
 }
 
 #[component]
-pub fn Result() -> Element {
-    let output = use_context::<Signal<Output>>();
-
+pub fn FormField(
+    id: String,
+    label_text: String,
+    input_type: String,
+    value: String,
+    oninput: EventHandler<FormEvent>,
+) -> Element {
     rsx! {
-        textarea { value: "{output.read().config}", readonly: "true" }
-        DownloadButton {
-            string: output.read().config.clone(),
-            file_name: "nord-{output.read().server_identifier}.conf"
-        }
-        QRCode { bytes: output.read().qrcode_bytes.clone() }
-    }
-}
-
-#[component]
-pub fn DownloadButton(string: String, file_name: String) -> Element {
-    rsx! {
-        a {
-            href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(string)}",
-            download: file_name,
-            button { "Download" }
-        }
-    }
-}
-
-#[component]
-pub fn QRCode(bytes: Vec<u8>) -> Element {
-    rsx! {
-        img {
-            alt: "QR Code",
-            src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(bytes)}"
+        label { r#for: id.clone(), "{label_text}" }
+        input {
+            id: id.clone(),
+            r#type: input_type,
+            oninput: move |event| {
+                spawn(async move { oninput.call(event) });
+            },
+            value
         }
     }
 }
@@ -199,6 +164,41 @@ pub fn ServerInfo(input: Input, server: Server) -> Element {
                 h5 { "{server.identifier()}" }
                 p { "{server.city()}, {server.country()} {server.load}" }
             }
+        }
+    }
+}
+
+#[component]
+pub fn Result() -> Element {
+    let output = use_context::<Signal<Output>>();
+
+    rsx! {
+        textarea { value: "{output.read().config}", readonly: "true" }
+        DownloadButton {
+            string: output.read().config.clone(),
+            file_name: "nord-{output.read().server_identifier}.conf"
+        }
+        QRCode { bytes: output.read().qrcode_bytes.clone() }
+    }
+}
+
+#[component]
+pub fn DownloadButton(string: String, file_name: String) -> Element {
+    rsx! {
+        a {
+            href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(string)}",
+            download: file_name,
+            button { "Download" }
+        }
+    }
+}
+
+#[component]
+pub fn QRCode(bytes: Vec<u8>) -> Element {
+    rsx! {
+        img {
+            alt: "QR Code",
+            src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(bytes)}"
         }
     }
 }
