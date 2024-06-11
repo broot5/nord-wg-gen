@@ -7,7 +7,7 @@ use std::net::Ipv4Addr;
 
 use crate::Input;
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, PartialEq)]
 pub struct Server {
     #[allow(dead_code)]
     id: usize,
@@ -15,7 +15,7 @@ pub struct Server {
     name: String,
     station: Ipv4Addr,
     hostname: String,
-    load: u8,
+    pub load: u8,
     status: String,
     locations: Vec<Value>,
     technologies: Vec<Value>,
@@ -23,13 +23,13 @@ pub struct Server {
 }
 
 impl Server {
-    fn country(&self) -> &str {
+    pub fn country(&self) -> &str {
         self.locations[0]["country"]["name"].as_str().unwrap()
     }
     fn country_code(&self) -> &str {
         self.locations[0]["country"]["code"].as_str().unwrap()
     }
-    fn city(&self) -> &str {
+    pub fn city(&self) -> &str {
         self.locations[0]["country"]["city"]["name"]
             .as_str()
             .unwrap()
@@ -55,33 +55,23 @@ impl Server {
     }
 }
 
-pub fn filter_servers(input: &Input, servers: &[Server]) -> Option<Server> {
-    let mut servers = servers.to_owned();
+pub fn filter_servers(input: &Input, servers: &[Server]) -> Vec<Server> {
+    let mut filtered_servers: Vec<Server> = servers
+        .iter()
+        .filter(|&x| {
+            x.is_wireguard()
+                && x.status == "online"
+                && (input.country.is_empty() || x.country() == input.country)
+                && (input.country_code.is_empty() || x.country_code() == input.country_code)
+                && (input.city.is_empty() || x.city() == input.city)
+                && x.is_p2p() == input.p2p
+        })
+        .cloned()
+        .collect();
 
-    servers.retain(|x| x.is_wireguard());
+    filtered_servers.sort_by(|a, b| a.load.cmp(&b.load));
 
-    servers.retain(|x| x.status == "online");
-
-    if !input.country.is_empty() {
-        servers.retain(|x| x.country() == input.country);
-    }
-
-    if !input.country_code.is_empty() {
-        servers.retain(|x| x.country_code() == input.country_code);
-    }
-
-    if !input.city.is_empty() {
-        servers.retain(|x| x.city() == input.city);
-    }
-
-    servers.retain(|x| x.is_p2p() == input.p2p);
-
-    servers.sort_by(|a, b| a.load.cmp(&b.load));
-
-    match servers.is_empty() || servers.get(input.server_index).is_none() {
-        true => None,
-        false => Some(servers.get(input.server_index).unwrap().clone()),
-    }
+    filtered_servers
 }
 
 pub fn generate_config(input: &Input, server: &Server) -> String {
