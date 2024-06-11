@@ -130,7 +130,9 @@ pub fn ServerList() -> Element {
             let filtered_servers = filter_servers(&input(), servers);
 
             if filtered_servers.is_empty() {
-                return rsx! { "Couldn't find server that meets the requested conditions." };
+                return rsx! {
+                    p { "Couldn't find server that meets the requested conditions." }
+                };
             }
 
             let servers_iter = filtered_servers.iter().take(20);
