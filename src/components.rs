@@ -1,5 +1,7 @@
 use base64::prelude::*;
 use dioxus::prelude::*;
+use dioxus_sdk::utils::timing::use_debounce;
+use std::time::Duration;
 
 use crate::utils::*;
 use crate::{Output, ServerFilterParam, UserConfig, URL};
@@ -26,7 +28,7 @@ pub fn InputForm() -> Element {
                 input_type: "text",
                 value: &server_filter_param.read().country_code,
                 oninput: move |event: FormEvent| {
-                    server_filter_param.write().country_code = event.value().to_uppercase();
+                    server_filter_param.write().country_code = event.value();
                 }
             }
         }
@@ -98,6 +100,8 @@ pub fn FormField(
     checked: Option<bool>,
     oninput: EventHandler<FormEvent>,
 ) -> Element {
+    let mut debounce = use_debounce(Duration::from_millis(100), move |event| oninput.call(event));
+
     rsx! {
         label { r#for: id, "{label_text}" }
         input {
@@ -105,7 +109,7 @@ pub fn FormField(
             r#type: input_type,
             value,
             checked,
-            oninput: move |event| { oninput.call(event) }
+            oninput: move |event| { debounce.action(event) }
         }
     }
 }

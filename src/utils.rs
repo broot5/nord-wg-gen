@@ -64,7 +64,8 @@ pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Serve
                 && (server_filter_params.country.is_empty()
                     || x.country() == server_filter_params.country)
                 && (server_filter_params.country_code.is_empty()
-                    || x.country_code() == server_filter_params.country_code)
+                    || x.country_code().to_lowercase()
+                        == server_filter_params.country_code.to_lowercase())
                 && (server_filter_params.city.is_empty() || x.city() == server_filter_params.city)
                 && x.is_p2p() == server_filter_params.p2p
             {
