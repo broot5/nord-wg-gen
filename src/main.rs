@@ -7,15 +7,17 @@ use components::*;
 
 const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers?&limit=99999";
 
-#[derive(Clone, PartialEq)]
-struct Input {
+struct UserConfig {
     private_key: String,
+    dns: String,
+    mtu: String,
+}
+
+struct ServerFilterParam {
     country: String,
     country_code: String,
     city: String,
     p2p: bool,
-    dns: String,
-    mtu: String,
 }
 
 struct Output {
@@ -34,14 +36,19 @@ fn main() {
 #[component]
 fn App() -> Element {
     use_context_provider(|| {
-        Signal::new(Input {
+        Signal::new(UserConfig {
             private_key: String::new(),
+            dns: String::from("1.1.1.1"),
+            mtu: String::from("1420"),
+        })
+    });
+
+    use_context_provider(|| {
+        Signal::new(ServerFilterParam {
             country: String::new(),
             country_code: String::new(),
             city: String::new(),
             p2p: true,
-            dns: String::from("1.1.1.1"),
-            mtu: String::from("1420"),
         })
     });
 

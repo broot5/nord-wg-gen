@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 use std::net::Ipv4Addr;
 
-use crate::Input;
+use crate::{ServerFilterParam, UserConfig};
 
 #[derive(Clone, Deserialize, PartialEq)]
 pub struct Server {
@@ -55,16 +55,18 @@ impl Server {
     }
 }
 
-pub fn filter_servers(input: &Input, servers: &[Server]) -> Vec<Server> {
+pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Server]) -> Vec<Server> {
     let mut filtered_servers: Vec<Server> = servers
         .iter()
         .filter_map(|x| {
             if x.is_wireguard()
                 && x.status == "online"
-                && (input.country.is_empty() || x.country() == input.country)
-                && (input.country_code.is_empty() || x.country_code() == input.country_code)
-                && (input.city.is_empty() || x.city() == input.city)
-                && x.is_p2p() == input.p2p
+                && (server_filter_params.country.is_empty()
+                    || x.country() == server_filter_params.country)
+                && (server_filter_params.country_code.is_empty()
+                    || x.country_code() == server_filter_params.country_code)
+                && (server_filter_params.city.is_empty() || x.city() == server_filter_params.city)
+                && x.is_p2p() == server_filter_params.p2p
             {
                 Some(x.clone())
             } else {
@@ -78,7 +80,7 @@ pub fn filter_servers(input: &Input, servers: &[Server]) -> Vec<Server> {
     filtered_servers
 }
 
-pub fn generate_config(input: &Input, server: &Server) -> String {
+pub fn generate_config(input: &UserConfig, server: &Server) -> String {
     format!(
         "# Configuration for {0} ({1}) - {2}, {3}
 [Interface]

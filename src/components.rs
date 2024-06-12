@@ -2,11 +2,12 @@ use base64::prelude::*;
 use dioxus::prelude::*;
 
 use crate::utils::*;
-use crate::{Input, Output, URL};
+use crate::{Output, ServerFilterParam, UserConfig, URL};
 
 #[component]
 pub fn InputForm() -> Element {
-    let mut input = use_context::<Signal<Input>>();
+    let mut user_config = use_context::<Signal<UserConfig>>();
+    let mut server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
     rsx! {
         div {
@@ -14,9 +15,9 @@ pub fn InputForm() -> Element {
                 id: "private_key",
                 label_text: "Private Key",
                 input_type: "password",
-                value: input().private_key,
+                value: &user_config.read().private_key,
                 oninput: move |event: FormEvent| {
-                    input.write().private_key = event.value();
+                    user_config.write().private_key = event.value();
                 }
             }
         }
@@ -25,18 +26,18 @@ pub fn InputForm() -> Element {
                 id: "country",
                 label_text: "Country",
                 input_type: "text",
-                value: input().country,
+                value: &server_filter_param.read().country,
                 oninput: move |event: FormEvent| {
-                    input.write().country = event.value();
+                    server_filter_param.write().country = event.value();
                 }
             }
             FormField {
                 id: "country_code",
                 label_text: "Country Code",
                 input_type: "text",
-                value: input().country_code,
+                value: &server_filter_param.read().country_code,
                 oninput: move |event: FormEvent| {
-                    input.write().country_code = event.value().to_uppercase();
+                    server_filter_param.write().country_code = event.value().to_uppercase();
                 }
             }
         }
@@ -45,9 +46,9 @@ pub fn InputForm() -> Element {
                 id: "city",
                 label_text: "City",
                 input_type: "text",
-                value: input().city,
+                value: &server_filter_param.read().city,
                 oninput: move |event: FormEvent| {
-                    input.write().city = event.value();
+                    server_filter_param.write().city = event.value();
                 }
             }
         }
@@ -57,9 +58,9 @@ pub fn InputForm() -> Element {
                 id: "p2p",
                 r#type: "checkbox",
                 oninput: move |event| {
-                    input.write().p2p = event.value().trim().parse().unwrap();
+                    server_filter_param.write().p2p = event.value().trim().parse().unwrap();
                 },
-                checked: input().p2p
+                checked: server_filter_param.read().p2p
             }
         }
         div {
@@ -67,9 +68,9 @@ pub fn InputForm() -> Element {
             input {
                 id: "dns",
                 r#type: "text",
-                value: input().dns,
+                value: &*user_config.read().dns,
                 oninput: move |event| {
-                    input.write().dns = event.value();
+                    user_config.write().dns = event.value();
                 },
                 list: "dns_list"
             }
@@ -84,9 +85,9 @@ pub fn InputForm() -> Element {
                 id: "mtu",
                 label_text: "MTU",
                 input_type: "text",
-                value: input().mtu,
+                value: &user_config.read().mtu,
                 oninput: move |event: FormEvent| {
-                    input.write().mtu = event.value();
+                    user_config.write().mtu = event.value();
                 }
             }
         }
@@ -114,7 +115,7 @@ pub fn FormField(
 
 #[component]
 pub fn ServerList() -> Element {
-    let input = use_context::<Signal<Input>>();
+    let server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
     let servers_resource = use_resource(move || async move {
         reqwest::Client::new()
@@ -127,7 +128,7 @@ pub fn ServerList() -> Element {
 
     match &*servers_resource.read_unchecked() {
         Some(Ok(servers)) => {
-            let filtered_servers = filter_servers(&input.read(), servers);
+            let filtered_servers = filter_servers(&server_filter_param.read(), servers);
 
             if filtered_servers.is_empty() {
                 return rsx! {
@@ -138,7 +139,7 @@ pub fn ServerList() -> Element {
             let servers_iter = filtered_servers.iter().take(20);
             let servers_rendered = servers_iter.map(|server| {
                 rsx! {
-                    ServerInfo { input: input(), server: server.clone() }
+                    ServerInfo { server: server.clone() }
                 }
             });
 
@@ -154,14 +155,15 @@ pub fn ServerList() -> Element {
 }
 
 #[component]
-pub fn ServerInfo(input: Input, server: Server) -> Element {
+pub fn ServerInfo(server: Server) -> Element {
+    let user_config = use_context::<Signal<UserConfig>>();
     let mut output = use_context::<Signal<Output>>();
 
     rsx! {
         div {
             button {
                 onclick: move |_| {
-                    let config = generate_config(&input, &server);
+                    let config = generate_config(&user_config.read(), &server);
                     *output
                         .write() = Output {
                         config: config.clone(),
