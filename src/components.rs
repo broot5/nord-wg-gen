@@ -206,18 +206,31 @@ pub fn Result() -> Element {
         dialog { id: "server_dialog", class: "modal modal-bottom sm:modal-middle",
             div { class: "modal-box",
                 p { class: "py-4",
-                    textarea { value: "{output.read().config}", readonly: "true" }
-                    DownloadButton {
-                        string: "{output.read().config}",
-                        file_name: "nord-{output.read().server_identifier}.conf"
-                    }
+                    ConfigText { config: "{output.read().config}" }
                     QRCode { bytes: output.read().qrcode_bytes.clone() }
                 }
                 div { class: "modal-action",
                     form { method: "dialog",
-                        button { class: "btn btn-primary", "Close" }
+                        DownloadButton {
+                            string: "{output.read().config}",
+                            file_name: "nord-{output.read().server_identifier}.conf"
+                        }
+                        button { class: "btn btn-primary m-2", "Close" }
                     }
                 }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn ConfigText(config: String) -> Element {
+    rsx! {
+        div { class: "collapse bg-neutral",
+            input { r#type: "checkbox" }
+            div { class: "collapse-title text-xl font-medium", "Click here to see raw config file" }
+            div { class: "collapse-content",
+                p { class: "text-pretty", "{config}" }
             }
         }
     }
@@ -229,7 +242,7 @@ pub fn DownloadButton(string: String, file_name: String) -> Element {
         a {
             href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(string)}",
             download: file_name,
-            button { "Download" }
+            button { class: "btn btn-accent m-2", "Download {file_name}" }
         }
     }
 }
