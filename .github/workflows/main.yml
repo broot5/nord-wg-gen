@@ -19,10 +19,12 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      - uses: oven-sh/setup-bun@v1
+
       - name: Install dioxus-cli
         run: cargo install dioxus-cli
 
-      - uses: oven-sh/setup-bun@v1
+      - name: Install tailwindcss
         working-directory: ./css
         run: |
           bun install
