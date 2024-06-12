@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::io::Cursor;
 use std::net::Ipv4Addr;
 
-use crate::{ServerFilterParam, UserConfig};
+use crate::app::{ServerFilterParam, UserConfig};
 
 #[derive(Clone, Deserialize, PartialEq)]
 pub struct Server {
