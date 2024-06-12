@@ -127,7 +127,7 @@ pub fn ServerList() -> Element {
 
     match &*servers_resource.read_unchecked() {
         Some(Ok(servers)) => {
-            let filtered_servers = filter_servers(&input(), servers);
+            let filtered_servers = filter_servers(&input.read(), servers);
 
             if filtered_servers.is_empty() {
                 return rsx! {
