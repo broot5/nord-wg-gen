@@ -100,7 +100,7 @@ pub fn FormField(
     checked: Option<bool>,
     oninput: EventHandler<FormEvent>,
 ) -> Element {
-    let mut debounce = use_debounce(Duration::from_millis(100), move |event| oninput.call(event));
+    let mut debounce = use_debounce(Duration::from_millis(200), move |event| oninput.call(event));
 
     rsx! {
         label { r#for: id, "{label_text}" }
