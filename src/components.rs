@@ -12,17 +12,6 @@ pub fn InputForm() -> Element {
     rsx! {
         div {
             FormField {
-                id: "private_key",
-                label_text: "Private Key",
-                input_type: "password",
-                value: &user_config.read().private_key,
-                oninput: move |event: FormEvent| {
-                    user_config.write().private_key = event.value();
-                }
-            }
-        }
-        div {
-            FormField {
                 id: "country",
                 label_text: "Country",
                 input_type: "text",
@@ -53,31 +42,37 @@ pub fn InputForm() -> Element {
             }
         }
         div {
-            label { r#for: "p2p", "P2P" }
-            input {
+            FormField {
                 id: "p2p",
-                r#type: "checkbox",
-                oninput: move |event| {
+                label_text: "P2P",
+                input_type: "checkbox",
+                value: "p2p",
+                checked: server_filter_param.read().p2p,
+                oninput: move |event: FormEvent| {
                     server_filter_param.write().p2p = event.value().trim().parse().unwrap();
-                },
-                checked: server_filter_param.read().p2p
+                }
             }
         }
         div {
-            label { r#for: "dns", "DNS" }
-            input {
-                id: "dns",
-                r#type: "text",
-                value: &*user_config.read().dns,
-                oninput: move |event| {
-                    user_config.write().dns = event.value();
-                },
-                list: "dns_list"
+            FormField {
+                id: "private_key",
+                label_text: "Private Key",
+                input_type: "password",
+                value: &user_config.read().private_key,
+                oninput: move |event: FormEvent| {
+                    user_config.write().private_key = event.value();
+                }
             }
-            datalist { id: "dns_list",
-                option { value: "1.1.1.1", "Cloudflare(1.1.1.1)" }
-                option { value: "9.9.9.9", "Quad9(9.9.9.9)" }
-                option { value: "194.242.2.2", "MullvadDNS(194.242.2.2)" }
+        }
+        div {
+            FormField {
+                id: "dns",
+                label_text: "DNS",
+                input_type: "text",
+                value: &*user_config.read().dns,
+                oninput: move |event: FormEvent| {
+                    user_config.write().dns = event.value();
+                }
             }
         }
         div {
@@ -100,6 +95,7 @@ pub fn FormField(
     label_text: &'static str,
     input_type: &'static str,
     value: String,
+    checked: Option<bool>,
     oninput: EventHandler<FormEvent>,
 ) -> Element {
     rsx! {
@@ -107,8 +103,9 @@ pub fn FormField(
         input {
             id,
             r#type: input_type,
-            oninput: move |event| { oninput.call(event) },
-            value
+            value,
+            checked,
+            oninput: move |event| { oninput.call(event) }
         }
     }
 }
