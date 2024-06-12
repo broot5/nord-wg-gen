@@ -58,18 +58,22 @@ impl Server {
 pub fn filter_servers(input: &Input, servers: &[Server]) -> Vec<Server> {
     let mut filtered_servers: Vec<Server> = servers
         .iter()
-        .filter(|&x| {
-            x.is_wireguard()
+        .filter_map(|x| {
+            if x.is_wireguard()
                 && x.status == "online"
                 && (input.country.is_empty() || x.country() == input.country)
                 && (input.country_code.is_empty() || x.country_code() == input.country_code)
                 && (input.city.is_empty() || x.city() == input.city)
                 && x.is_p2p() == input.p2p
+            {
+                Some(x.clone())
+            } else {
+                None
+            }
         })
-        .cloned()
         .collect();
 
-    filtered_servers.sort_by(|a, b| a.load.cmp(&b.load));
+    filtered_servers.sort_unstable_by(|a, b| a.load.cmp(&b.load));
 
     filtered_servers
 }
