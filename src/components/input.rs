@@ -10,7 +10,7 @@ pub fn InputForm() -> Element {
     let mut server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
     rsx! {
-        div {
+        div { class: "columns-2",
             FormField {
                 id: "country",
                 label_text: "Country",
