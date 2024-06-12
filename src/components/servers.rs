@@ -26,7 +26,7 @@ pub fn ServerList() -> Element {
                 };
             }
 
-            let servers_iter = filtered_servers.iter().take(20);
+            let servers_iter = filtered_servers.iter().take(48);
             let servers_rendered = servers_iter.map(|server| {
                 rsx! {
                     ServerInfo { server: server.clone() }
@@ -54,7 +54,15 @@ pub fn ServerInfo(server: Server) -> Element {
             div { class: "card-body",
                 h2 { class: "card-title",
                     "{server.identifier()}"
-                    div { class: "badge badge-info", "{server.load}%" }
+                    div {
+                        class: match server.load {
+                            0..=10 => "badge badge-info",
+                            11..=30 => "badge badge-success",
+                            31..=50 => "badge badge-warning",
+                            51..=u8::MAX => "badge badge-error",
+                        },
+                        "{server.load}%"
+                    }
                 }
                 p { class: "card-body", "{server.city()}, {server.country()}" }
                 div { class: "card-actions justify-end",

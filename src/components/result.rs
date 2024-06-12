@@ -10,17 +10,17 @@ pub fn Result() -> Element {
     rsx! {
         dialog { id: "server_dialog", class: "modal modal-bottom sm:modal-middle",
             div { class: "modal-box",
-                p { class: "py-4",
+                pre { class: "py-4",
                     ConfigText { config: "{output.read().config}" }
                     QRCode { bytes: output.read().qrcode_bytes.clone() }
                 }
                 div { class: "modal-action",
+                    DownloadButton {
+                        string: "{output.read().config}",
+                        file_name: "nord-{output.read().server_identifier}.conf"
+                    }
                     form { method: "dialog",
-                        DownloadButton {
-                            string: "{output.read().config}",
-                            file_name: "nord-{output.read().server_identifier}.conf"
-                        }
-                        button { class: "btn btn-primary m-2", "Close" }
+                        button { class: "btn btn-secondary", "Close" }
                     }
                 }
             }
@@ -47,7 +47,7 @@ pub fn DownloadButton(string: String, file_name: String) -> Element {
         a {
             href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(string)}",
             download: file_name,
-            button { class: "btn btn-accent m-2", "Download {file_name}" }
+            button { class: "btn btn-accent", "Download {file_name}" }
         }
     }
 }

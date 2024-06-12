@@ -60,10 +60,10 @@ pub fn App() -> Element {
                 }
             }
         }
-        main { class: "container mx-auto",
+        main { class: "sm:container sm:mx-auto",
             div { class: "grid grid-cols-1 sm:grid-cols-2",
-                div { class: "overflow-auto mx-auto", InputForm {} }
-                div { class: "overflow-auto mx-auto", ServerList {} }
+                div { class: "container mx-auto", InputForm {} }
+                div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3", ServerList {} }
             }
             div { Result {} }
         }
