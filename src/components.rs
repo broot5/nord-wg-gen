@@ -12,7 +12,7 @@ pub fn InputForm() -> Element {
     let mut server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
     rsx! {
-        div {
+        div { class: "container",
             FormField {
                 id: "country",
                 label_text: "Country",
@@ -103,13 +103,22 @@ pub fn FormField(
     let mut debounce = use_debounce(Duration::from_millis(200), move |event| oninput.call(event));
 
     rsx! {
-        label { r#for: id, "{label_text}" }
-        input {
-            id,
-            r#type: input_type,
-            value,
-            checked,
-            oninput: move |event| { debounce.action(event) }
+        label {
+            class: "form-control label items-start w-full max-w-xs",
+            r#for: id,
+            "{label_text}"
+            input {
+                class: if input_type == "checkbox" {
+                    "checkbox"
+                } else {
+                    "input input-bordered w-full max-w-xs"
+                },
+                id,
+                r#type: input_type,
+                value,
+                checked,
+                oninput: move |event| { debounce.action(event) }
+            }
         }
     }
 }
@@ -161,19 +170,29 @@ pub fn ServerInfo(server: Server) -> Element {
     let mut output = use_context::<Signal<Output>>();
 
     rsx! {
-        div {
-            button {
-                onclick: move |_| {
-                    let config = generate_config(&user_config.read(), &server);
-                    *output
-                        .write() = Output {
-                        config: config.clone(),
-                        qrcode_bytes: make_qrcode(&config),
-                        server_identifier: server.identifier(),
-                    };
-                },
-                h5 { "{server.identifier()}" }
-                p { "{server.city()}, {server.country()} {server.load}" }
+        div { class: "card card-compact bg-neutral m-2",
+            div { class: "card-body",
+                h2 { class: "card-title",
+                    "{server.identifier()}"
+                    div { class: "badge badge-info", "{server.load}%" }
+                }
+                p { class: "card-body", "{server.city()}, {server.country()}" }
+                div { class: "card-actions justify-end",
+                    button {
+                        class: "btn btn-primary",
+                        onclick: move |_| {
+                            let config = generate_config(&user_config.read(), &server);
+                            *output
+                                .write() = Output {
+                                config: config.clone(),
+                                qrcode_bytes: make_qrcode(&config),
+                                server_identifier: server.identifier(),
+                            };
+                            eval("server_dialog.showModal();").send("Open dialog".into()).unwrap();
+                        },
+                        "Select"
+                    }
+                }
             }
         }
     }
@@ -184,12 +203,23 @@ pub fn Result() -> Element {
     let output = use_context::<Signal<Output>>();
 
     rsx! {
-        textarea { value: "{output.read().config}", readonly: "true" }
-        DownloadButton {
-            string: "{output.read().config}",
-            file_name: "nord-{output.read().server_identifier}.conf"
+        dialog { id: "server_dialog", class: "modal modal-bottom sm:modal-middle",
+            div { class: "modal-box",
+                p { class: "py-4",
+                    textarea { value: "{output.read().config}", readonly: "true" }
+                    DownloadButton {
+                        string: "{output.read().config}",
+                        file_name: "nord-{output.read().server_identifier}.conf"
+                    }
+                    QRCode { bytes: output.read().qrcode_bytes.clone() }
+                }
+                div { class: "modal-action",
+                    form { method: "dialog",
+                        button { class: "btn btn-primary", "Close" }
+                    }
+                }
+            }
         }
-        QRCode { bytes: output.read().qrcode_bytes.clone() }
     }
 }
 

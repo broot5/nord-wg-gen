@@ -22,10 +22,16 @@ jobs:
       - name: Install dioxus-cli
         run: cargo install dioxus-cli
 
+      - uses: oven-sh/setup-bun@v1
+        working-directory: ./css
+        run: |
+          bun install
+          bun tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css
+
       - name: Build
         run: dx build --release
-      
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
-        with: 
+        with:
           folder: dist

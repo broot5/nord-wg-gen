@@ -62,14 +62,20 @@ fn App() -> Element {
 
     rsx! {
         header {
-            nav {
-                h1 {
-                    a { href: "https://github.com/broot5/nord-wg-gen", "nord-wg-gen" }
+            nav { class: "navbar",
+                a {
+                    class: "btn btn-ghost text-xl",
+                    href: "https://github.com/broot5/nord-wg-gen",
+                    "nord-wg-gen"
                 }
             }
         }
-        div { InputForm {} }
-        div { ServerList {} }
-        div { Result {} }
+        main { class: "container mx-auto",
+            div { class: "grid grid-cols-2",
+                div { class: "overflow-auto", InputForm {} }
+                div { class: "overflow-auto", ServerList {} }
+            }
+            div { Result {} }
+        }
     }
 }

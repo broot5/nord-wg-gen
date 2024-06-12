@@ -34,9 +34,7 @@ watch_path = ["src", "assets"]
 [web.resource]
 
 # CSS style file
-style = [
-    "https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css"
-]
+style = ["tailwind.css"]
 
 # Javascript code file
 script = []
