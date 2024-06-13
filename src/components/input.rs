@@ -10,7 +10,7 @@ pub fn InputForm() -> Element {
     let mut server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
     rsx! {
-        div { class: "sm:max-w-sm card bg-neutral-content shadow-lg p-4 m-2",
+        div { class: "sm:max-w-sm card bg-base-200 shadow-lg p-4 m-2",
             div { class: "columns-2",
                 FormField {
                     id: "country",
@@ -103,7 +103,7 @@ pub fn FormField(
     let mut debounce = use_debounce(Duration::from_millis(200), move |event| oninput.call(event));
 
     rsx! {
-        label { class: "form-control label items-start w-full", r#for: id,
+        label { class: "form-control label w-full items-start", r#for: id,
             "{label_text}"
             input {
                 class: if input_type == "checkbox" { "checkbox" } else { "input input-bordered w-full" },

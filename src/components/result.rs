@@ -31,7 +31,7 @@ pub fn Result() -> Element {
 #[component]
 pub fn ConfigText(config: String) -> Element {
     rsx! {
-        div { class: "collapse bg-neutral-content",
+        div { class: "collapse bg-base-200",
             input { r#type: "checkbox" }
             div { class: "collapse-title text-xl", "Click here to see raw config file" }
             div { class: "collapse-content overflow-auto",

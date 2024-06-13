@@ -56,12 +56,11 @@ pub fn ServerInfo(server: Server) -> Element {
     let server_load = server.load;
 
     rsx! {
-        div { class: "stats bg-neutral-content m-2 shadow-lg",
+        div { class: "stats bg-base-200 shadow-lg m-2",
             button {
                 onclick: move |_| {
                     let config = generate_config(&user_config.read(), &server);
-                    *output
-                        .write() = Output {
+                    *output.write() = Output {
                         config: config.clone(),
                         qrcode_bytes: make_qrcode(&config),
                         server_identifier: server.identifier(),
@@ -71,15 +70,12 @@ pub fn ServerInfo(server: Server) -> Element {
                 div { class: "stat",
                     div { class: "stat-title flex justify-between",
                         div { "{server.identifier().to_uppercase()}" }
-                        div {
-                            class: match server_load {
+                        div { class: match server_load {
                                 0..=10 => "badge badge-info",
                                 11..=30 => "badge badge-success",
                                 31..=50 => "badge badge-warning",
                                 51..=u8::MAX => "badge badge-error",
-                            },
-                            "{server.load}%"
-                        }
+                            }, "{server.load}%" }
                     }
                     div { class: "text-xl flex place-items-start text-wrap", "{server.city()}" }
                     div { class: "stat-desc flex place-items-start text-4xl",
