@@ -22,7 +22,14 @@ pub fn ServerList() -> Element {
 
             if filtered_servers.is_empty() {
                 return rsx! {
-                    p { "Couldn't find server that meets the requested conditions." }
+                    div { class: "hero min-h-screen",
+                        div { class: "hero-content text-center",
+                            div { class: "max-w-md",
+                                div { class: "text-4xl", "No server found" }
+                                p { class: "py-6", "No servers were found that match your criteria." }
+                            }
+                        }
+                    }
                 };
             }
 
@@ -43,7 +50,15 @@ pub fn ServerList() -> Element {
             rsx! { "An error occurred while fetching servers {err}" }
         }
         None => {
-            rsx! { "Loading servers..." }
+            rsx! {
+                div { class: "hero min-h-screen",
+                    div { class: "hero-content text-center",
+                        div { class: "max-w-md",
+                            div { class: "text-4xl", "Loading..." }
+                        }
+                    }
+                }
+            }
         }
     }
 }
