@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::app::{Output, ServerFilterParam, UserConfig, URL};
-use crate::utils::{filter_servers, generate_config, make_qrcode, Server};
+use crate::utils::{filter_servers, generate_config, get_flag_emoji, make_qrcode, Server};
 
 #[component]
 pub fn ServerList() -> Element {
@@ -53,36 +53,37 @@ pub fn ServerInfo(server: Server) -> Element {
     let user_config = use_context::<Signal<UserConfig>>();
     let mut output = use_context::<Signal<Output>>();
 
+    let server_load = server.load;
+
     rsx! {
-        div { class: "card card-compact bg-neutral-content m-2 shadow-lg",
-            div { class: "card-body",
-                div { class: "card-title text-xl",
-                    "{server.identifier().to_uppercase()}"
-                    div {
-                        class: match server.load {
-                            0..=10 => "badge badge-info",
-                            11..=30 => "badge badge-success",
-                            31..=50 => "badge badge-warning",
-                            51..=u8::MAX => "badge badge-error",
-                        },
-                        "{server.load}%"
+        div { class: "stats bg-neutral-content m-2 shadow-lg",
+            button {
+                onclick: move |_| {
+                    let config = generate_config(&user_config.read(), &server);
+                    *output
+                        .write() = Output {
+                        config: config.clone(),
+                        qrcode_bytes: make_qrcode(&config),
+                        server_identifier: server.identifier(),
+                    };
+                    eval("server_dialog.showModal();").send("Open dialog".into()).unwrap();
+                },
+                div { class: "stat",
+                    div { class: "stat-title flex justify-between",
+                        div { "{server.identifier().to_uppercase()}" }
+                        div {
+                            class: match server_load {
+                                0..=10 => "badge badge-info",
+                                11..=30 => "badge badge-success",
+                                31..=50 => "badge badge-warning",
+                                51..=u8::MAX => "badge badge-error",
+                            },
+                            "{server.load}%"
+                        }
                     }
-                }
-                div { class: "card-body", "{server.city()}, {server.country()}" }
-                div { class: "card-actions justify-end",
-                    button {
-                        class: "btn",
-                        onclick: move |_| {
-                            let config = generate_config(&user_config.read(), &server);
-                            *output
-                                .write() = Output {
-                                config: config.clone(),
-                                qrcode_bytes: make_qrcode(&config),
-                                server_identifier: server.identifier(),
-                            };
-                            eval("server_dialog.showModal();").send("Open dialog".into()).unwrap();
-                        },
-                        "Select"
+                    div { class: "text-xl flex place-items-start text-wrap", "{server.city()}" }
+                    div { class: "stat-desc flex place-items-start text-4xl",
+                        "{get_flag_emoji(server.country_code()).unwrap()}"
                     }
                 }
             }

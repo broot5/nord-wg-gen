@@ -26,7 +26,7 @@ impl Server {
     pub fn country(&self) -> &str {
         self.locations[0]["country"]["name"].as_str().unwrap()
     }
-    fn country_code(&self) -> &str {
+    pub fn country_code(&self) -> &str {
         self.locations[0]["country"]["code"].as_str().unwrap()
     }
     pub fn city(&self) -> &str {
@@ -116,4 +116,33 @@ pub fn make_qrcode(config: &String) -> Vec<u8> {
         .unwrap();
 
     bytes
+}
+
+pub fn get_flag_emoji(country_code: &str) -> Option<String> {
+    let base: u32 = 127397;
+    let flag: String = country_code
+        .to_uppercase()
+        .chars()
+        .filter_map(|char| std::char::from_u32(base + char as u32))
+        .collect();
+
+    if flag.is_empty() {
+        None
+    } else {
+        Some(flag)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_flag_emoji() {
+        assert_eq!(get_flag_emoji("KR"), Some(String::from("🇰🇷")));
+        assert_eq!(get_flag_emoji("US"), Some(String::from("🇺🇸")));
+        assert_eq!(get_flag_emoji("JP"), Some(String::from("🇯🇵")));
+        assert_eq!(get_flag_emoji("DE"), Some(String::from("🇩🇪")));
+        assert_eq!(get_flag_emoji("AU"), Some(String::from("🇦🇺")));
+    }
 }
