@@ -55,9 +55,11 @@ pub fn DownloadButton(string: String, file_name: String) -> Element {
 #[component]
 pub fn QRCode(bytes: Vec<u8>) -> Element {
     rsx! {
-        img {
-            alt: "QR Code",
-            src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(bytes)}"
+        div { class: "rounded-2xl overflow-hidden",
+            img {
+                alt: "QR Code",
+                src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(bytes)}"
+            }
         }
     }
 }
