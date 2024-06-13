@@ -7,7 +7,7 @@ use crate::utils::{filter_servers, generate_config, make_qrcode, Server};
 pub fn ServerList() -> Element {
     let server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
-    let servers_resource = use_resource(move || async move {
+    let servers_resource = use_resource(|| async move {
         reqwest::Client::new()
             .get(URL)
             .send()
@@ -40,7 +40,9 @@ pub fn ServerList() -> Element {
         Some(Err(err)) => {
             rsx! { "An error occurred while fetching servers {err}" }
         }
-        None => rsx! { "Loading servers" },
+        None => {
+            rsx! { "Loading servers..." }
+        }
     }
 }
 
@@ -50,10 +52,10 @@ pub fn ServerInfo(server: Server) -> Element {
     let mut output = use_context::<Signal<Output>>();
 
     rsx! {
-        div { class: "card card-compact bg-neutral m-2",
+        div { class: "card card-compact bg-neutral-content m-2",
             div { class: "card-body",
-                h2 { class: "card-title",
-                    "{server.identifier()}"
+                div { class: "card-title text-xl",
+                    "{server.identifier().to_uppercase()}"
                     div {
                         class: match server.load {
                             0..=10 => "badge badge-info",
@@ -64,10 +66,10 @@ pub fn ServerInfo(server: Server) -> Element {
                         "{server.load}%"
                     }
                 }
-                p { class: "card-body", "{server.city()}, {server.country()}" }
+                div { class: "card-body", "{server.city()}, {server.country()}" }
                 div { class: "card-actions justify-end",
                     button {
-                        class: "btn btn-primary",
+                        class: "btn",
                         onclick: move |_| {
                             let config = generate_config(&user_config.read(), &server);
                             *output

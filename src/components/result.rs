@@ -10,7 +10,7 @@ pub fn Result() -> Element {
     rsx! {
         dialog { id: "server_dialog", class: "modal modal-bottom sm:modal-middle",
             div { class: "modal-box",
-                pre { class: "py-4",
+                div { class: "py-4",
                     ConfigText { config: "{output.read().config}" }
                     QRCode { bytes: output.read().qrcode_bytes.clone() }
                 }
@@ -31,11 +31,11 @@ pub fn Result() -> Element {
 #[component]
 pub fn ConfigText(config: String) -> Element {
     rsx! {
-        div { class: "collapse bg-neutral",
+        div { class: "collapse bg-neutral-content",
             input { r#type: "checkbox" }
-            div { class: "collapse-title text-xl font-medium", "Click here to see raw config file" }
-            div { class: "collapse-content",
-                p { class: "text-pretty", "{config}" }
+            div { class: "collapse-title text-xl", "Click here to see raw config file" }
+            div { class: "collapse-content overflow-auto",
+                pre { "{config}" }
             }
         }
     }
