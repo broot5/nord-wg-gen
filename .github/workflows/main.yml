@@ -28,7 +28,7 @@ jobs:
         working-directory: ./css
         run: |
           bun install
-          bun tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css
+          bun tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css --minify
 
       - name: Build
         run: dx build --release
