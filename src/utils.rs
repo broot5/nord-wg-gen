@@ -62,11 +62,12 @@ pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Serve
             if x.is_wireguard()
                 && x.status == "online"
                 && (server_filter_params.country.is_empty()
-                    || x.country() == server_filter_params.country)
+                    || x.country().to_lowercase() == server_filter_params.country.to_lowercase())
                 && (server_filter_params.country_code.is_empty()
                     || x.country_code().to_lowercase()
                         == server_filter_params.country_code.to_lowercase())
-                && (server_filter_params.city.is_empty() || x.city() == server_filter_params.city)
+                && (server_filter_params.city.is_empty()
+                    || x.city().to_uppercase() == server_filter_params.city.to_lowercase())
                 && x.is_p2p() == server_filter_params.p2p
             {
                 Some(x.clone())

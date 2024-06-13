@@ -33,7 +33,7 @@ pub fn ServerList() -> Element {
                 };
             }
 
-            let servers_iter = filtered_servers.iter().take(48);
+            let servers_iter = filtered_servers.iter().take(24);
             let servers_rendered = servers_iter.map(|server| {
                 rsx! {
                     ServerInfo { server: server.clone() }
