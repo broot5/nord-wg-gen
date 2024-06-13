@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::{input::InputForm, result::Result, servers::ServerList};
+use crate::components::{input::InputForm, navbar::Navbar, result::Result, servers::ServerList};
 
 pub struct UserConfig {
     pub private_key: String,
@@ -51,15 +51,7 @@ pub fn App() -> Element {
     });
 
     rsx! {
-        header {
-            nav { class: "navbar",
-                a {
-                    class: "btn btn-ghost text-xl",
-                    href: "https://github.com/broot5/nord-wg-gen",
-                    "nord-wg-gen"
-                }
-            }
-        }
+        header { Navbar {} }
         main { class: "sm:container sm:mx-auto",
             div { class: "sm:flex",
                 div { class: "sm:flex-none", InputForm {} }
