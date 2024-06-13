@@ -10,79 +10,81 @@ pub fn InputForm() -> Element {
     let mut server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
     rsx! {
-        div { class: "columns-2",
-            FormField {
-                id: "country",
-                label_text: "Country",
-                input_type: "text",
-                value: &server_filter_param.read().country,
-                oninput: move |event: FormEvent| {
-                    server_filter_param.write().country = event.value();
+        div { class: "sm:max-w-sm card bg-neutral-content shadow-lg p-4 m-2",
+            div { class: "columns-2",
+                FormField {
+                    id: "country",
+                    label_text: "Country",
+                    input_type: "text",
+                    value: &server_filter_param.read().country,
+                    oninput: move |event: FormEvent| {
+                        server_filter_param.write().country = event.value();
+                    }
+                }
+                FormField {
+                    id: "country_code",
+                    label_text: "Country Code",
+                    input_type: "text",
+                    value: &server_filter_param.read().country_code,
+                    oninput: move |event: FormEvent| {
+                        server_filter_param.write().country_code = event.value();
+                    }
                 }
             }
-            FormField {
-                id: "country_code",
-                label_text: "Country Code",
-                input_type: "text",
-                value: &server_filter_param.read().country_code,
-                oninput: move |event: FormEvent| {
-                    server_filter_param.write().country_code = event.value();
+            div {
+                FormField {
+                    id: "city",
+                    label_text: "City",
+                    input_type: "text",
+                    value: &server_filter_param.read().city,
+                    oninput: move |event: FormEvent| {
+                        server_filter_param.write().city = event.value();
+                    }
                 }
             }
-        }
-        div {
-            FormField {
-                id: "city",
-                label_text: "City",
-                input_type: "text",
-                value: &server_filter_param.read().city,
-                oninput: move |event: FormEvent| {
-                    server_filter_param.write().city = event.value();
+            div {
+                FormField {
+                    id: "p2p",
+                    label_text: "P2P",
+                    input_type: "checkbox",
+                    value: "p2p",
+                    checked: server_filter_param.read().p2p,
+                    oninput: move |event: FormEvent| {
+                        server_filter_param.write().p2p = event.value().trim().parse().unwrap();
+                    }
                 }
             }
-        }
-        div {
-            FormField {
-                id: "p2p",
-                label_text: "P2P",
-                input_type: "checkbox",
-                value: "p2p",
-                checked: server_filter_param.read().p2p,
-                oninput: move |event: FormEvent| {
-                    server_filter_param.write().p2p = event.value().trim().parse().unwrap();
+            div {
+                FormField {
+                    id: "private_key",
+                    label_text: "Private Key",
+                    input_type: "password",
+                    value: &user_config.read().private_key,
+                    oninput: move |event: FormEvent| {
+                        user_config.write().private_key = event.value();
+                    }
                 }
             }
-        }
-        div {
-            FormField {
-                id: "private_key",
-                label_text: "Private Key",
-                input_type: "password",
-                value: &user_config.read().private_key,
-                oninput: move |event: FormEvent| {
-                    user_config.write().private_key = event.value();
+            div {
+                FormField {
+                    id: "dns",
+                    label_text: "DNS",
+                    input_type: "text",
+                    value: &*user_config.read().dns,
+                    oninput: move |event: FormEvent| {
+                        user_config.write().dns = event.value();
+                    }
                 }
             }
-        }
-        div {
-            FormField {
-                id: "dns",
-                label_text: "DNS",
-                input_type: "text",
-                value: &*user_config.read().dns,
-                oninput: move |event: FormEvent| {
-                    user_config.write().dns = event.value();
-                }
-            }
-        }
-        div {
-            FormField {
-                id: "mtu",
-                label_text: "MTU",
-                input_type: "text",
-                value: &user_config.read().mtu,
-                oninput: move |event: FormEvent| {
-                    user_config.write().mtu = event.value();
+            div {
+                FormField {
+                    id: "mtu",
+                    label_text: "MTU",
+                    input_type: "text",
+                    value: &user_config.read().mtu,
+                    oninput: move |event: FormEvent| {
+                        user_config.write().mtu = event.value();
+                    }
                 }
             }
         }

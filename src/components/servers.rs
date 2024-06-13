@@ -34,7 +34,9 @@ pub fn ServerList() -> Element {
             });
 
             rsx! {
-                {servers_rendered}
+                div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+                    {servers_rendered}
+                }
             }
         }
         Some(Err(err)) => {
@@ -52,7 +54,7 @@ pub fn ServerInfo(server: Server) -> Element {
     let mut output = use_context::<Signal<Output>>();
 
     rsx! {
-        div { class: "card card-compact bg-neutral-content m-2",
+        div { class: "card card-compact bg-neutral-content m-2 shadow-lg",
             div { class: "card-body",
                 div { class: "card-title text-xl",
                     "{server.identifier().to_uppercase()}"
