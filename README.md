@@ -5,7 +5,6 @@ https://broot5.github.io/nord-wg-gen/
 ## Build
 
 ```console
-rustup target add wasm32-unknown-unknown
 cargo install dioxus-cli
 
 git clone https://github.com/broot5/nord-wg-gen.git
@@ -14,6 +13,7 @@ cd nord-wg-gen
 cd css
 bun install
 bun tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css --minify
+cd ..
 
 dx build --release
 ```
