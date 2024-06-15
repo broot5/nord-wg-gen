@@ -67,7 +67,7 @@ pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Serve
                     || x.country_code().to_lowercase()
                         == server_filter_params.country_code.to_lowercase())
                 && (server_filter_params.city.is_empty()
-                    || x.city().to_uppercase() == server_filter_params.city.to_lowercase())
+                    || x.city().to_lowercase() == server_filter_params.city.to_lowercase())
                 && x.is_p2p() == server_filter_params.p2p
             {
                 Some(x.clone())
