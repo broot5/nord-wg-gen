@@ -9,10 +9,10 @@ importers:
   .:
     devDependencies:
       daisyui:
-        specifier: ^4.12.2
+        specifier: ^4.12.14
         version: 4.12.14(postcss@8.4.49)
       tailwindcss:
-        specifier: ^3.4.4
+        specifier: ^3.4.15
         version: 3.4.15
 
 packages:
