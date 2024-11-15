@@ -19,16 +19,24 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: oven-sh/setup-bun@v1
-
       - name: Install dioxus-cli
         run: cargo install dioxus-cli
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
 
       - name: Install tailwindcss
         working-directory: ./css
         run: |
-          bun install
-          bun tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css --minify
+          pnpm install
+          pnpm tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css --minify
 
       - name: Build
         run: dx build --release

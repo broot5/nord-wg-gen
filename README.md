@@ -11,8 +11,8 @@ git clone https://github.com/broot5/nord-wg-gen.git
 cd nord-wg-gen
 
 cd css
-bun install
-bun tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css --minify
+pnpm install
+pnpm tailwindcss -i ./tailwind.input.css -o ../assets/tailwind.css --minify
 cd ..
 
 dx build --release
