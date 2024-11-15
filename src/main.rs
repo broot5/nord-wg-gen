@@ -1,5 +1,6 @@
 mod app;
 mod components;
+mod mapper;
 mod utils;
 
 use dioxus::prelude::*;

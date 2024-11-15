@@ -1,20 +1,31 @@
 use dioxus::prelude::*;
 
 use crate::app::{Output, ServerFilterParam, UserConfig, URL};
-use crate::utils::{filter_servers, generate_config, get_flag_emoji, make_qrcode, Server};
+use crate::mapper::{Server, ServerIntermediate};
+use crate::utils::{filter_servers, generate_config, get_flag_emoji, make_qrcode};
 
 #[component]
 pub fn ServerList() -> Element {
     let server_filter_param = use_context::<Signal<ServerFilterParam>>();
 
-    let servers_resource = use_resource(|| async move {
-        reqwest::Client::new()
-            .get(URL)
-            .send()
-            .await?
-            .json::<Vec<Server>>()
-            .await
-    });
+    let servers_resource: Resource<Result<Vec<Server>, Box<dyn std::error::Error>>> =
+        use_resource(|| async move {
+            let server_intermediates = reqwest::Client::new()
+                .get("https://corsproxy.io/?".to_owned() + URL)
+                .send()
+                .await
+                .unwrap()
+                .json::<Vec<ServerIntermediate>>()
+                .await
+                .unwrap();
+
+            let servers = server_intermediates
+                .into_iter()
+                .map(|intermediate| Server::from(&intermediate))
+                .collect::<Vec<Server>>();
+
+            Ok(servers)
+        });
 
     match &*servers_resource.read_unchecked() {
         Some(Ok(servers)) => {
@@ -78,13 +89,13 @@ pub fn ServerInfo(server: Server) -> Element {
                     *output.write() = Output {
                         config: config.clone(),
                         qrcode_bytes: make_qrcode(&config),
-                        server_identifier: server.identifier(),
+                        server_identifier: server.identifier.clone(),
                     };
                     eval("server_dialog.showModal();").send("Open dialog".into()).unwrap();
                 },
                 div { class: "stat",
                     div { class: "stat-title flex justify-between",
-                        div { "{server.identifier().to_uppercase()}" }
+                        div { "{server.identifier.to_uppercase()}" }
                         div {
                             class: match server_load {
                                 0..=10 => "badge badge-info",
@@ -95,9 +106,9 @@ pub fn ServerInfo(server: Server) -> Element {
                             "{server.load}%"
                         }
                     }
-                    div { class: "text-xl flex place-items-start text-wrap", "{server.city()}" }
+                    div { class: "text-xl flex place-items-start text-wrap", "{server.city}" }
                     div { class: "stat-desc flex place-items-start text-4xl",
-                        "{get_flag_emoji(server.country_code()).unwrap()}"
+                        "{get_flag_emoji(server.country_code.as_str()).unwrap()}"
                     }
                 }
             }

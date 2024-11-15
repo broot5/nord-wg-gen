@@ -21,7 +21,7 @@ pub struct Output {
     pub server_identifier: String,
 }
 
-pub const URL: &str = "https://corsproxy.io/?https://api.nordvpn.com/v1/servers?&limit=99999";
+pub const URL: &str = "https://api.nordvpn.com/v1/servers?limit=9999&filters[servers_technologies][identifier]=wireguard_udp";
 
 #[component]
 pub fn App() -> Element {
