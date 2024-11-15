@@ -85,12 +85,15 @@ pub fn ServerInfo(server: Server) -> Element {
                 div { class: "stat",
                     div { class: "stat-title flex justify-between",
                         div { "{server.identifier().to_uppercase()}" }
-                        div { class: match server_load {
+                        div {
+                            class: match server_load {
                                 0..=10 => "badge badge-info",
                                 11..=30 => "badge badge-success",
                                 31..=50 => "badge badge-warning",
                                 51..=u8::MAX => "badge badge-error",
-                            }, "{server.load}%" }
+                            },
+                            "{server.load}%"
+                        }
                     }
                     div { class: "text-xl flex place-items-start text-wrap", "{server.city()}" }
                     div { class: "stat-desc flex place-items-start text-4xl",

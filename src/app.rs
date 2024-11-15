@@ -28,7 +28,7 @@ pub fn App() -> Element {
     use_context_provider(|| {
         Signal::new(UserConfig {
             private_key: String::new(),
-            dns: String::from("1.1.1.1"),
+            dns: String::from("103.86.96.100"),
             mtu: String::from("1420"),
         })
     });

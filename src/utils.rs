@@ -93,7 +93,7 @@ MTU = {7}
 
 [Peer]
 PublicKey = {4}
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = 0.0.0.0/0, ::/0
 Endpoint = {0}:51820",
         server.hostname,
         server.station,
