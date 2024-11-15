@@ -46,12 +46,7 @@ impl Server {
         self.technologies.get(5).is_some()
     }
     pub fn identifier(&self) -> String {
-        self.hostname
-            .split('.')
-            .collect::<Vec<&str>>()
-            .first()
-            .unwrap()
-            .to_string()
+        self.hostname.split('.').next().unwrap().to_string()
     }
 }
 
