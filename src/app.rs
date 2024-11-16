@@ -9,9 +9,7 @@ pub struct UserConfig {
 }
 
 pub struct ServerFilterParam {
-    pub country: String,
-    pub country_code: String,
-    pub city: String,
+    pub query: String,
     pub p2p: bool,
 }
 
@@ -35,9 +33,7 @@ pub fn App() -> Element {
 
     use_context_provider(|| {
         Signal::new(ServerFilterParam {
-            country: String::new(),
-            country_code: String::new(),
-            city: String::new(),
+            query: String::new(),
             p2p: true,
         })
     });

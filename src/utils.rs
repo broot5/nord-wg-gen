@@ -9,18 +9,14 @@ pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Serve
         .iter()
         .filter(|x| {
             x.status
-                && (server_filter_params.country.is_empty()
-                    || x.country
-                        .to_lowercase()
-                        .contains(&server_filter_params.country.to_lowercase()))
-                && (server_filter_params.country_code.is_empty()
-                    || x.country_code
-                        .to_lowercase()
-                        .contains(&server_filter_params.country_code.to_lowercase()))
-                && (server_filter_params.city.is_empty()
-                    || x.city
-                        .to_lowercase()
-                        .contains(&server_filter_params.city.to_lowercase()))
+                && (server_filter_params.query.is_empty()
+                    || [
+                        x.country.to_lowercase(),
+                        x.country_code.to_lowercase(),
+                        x.city.to_lowercase(),
+                    ]
+                    .iter()
+                    .any(|field| field.contains(&server_filter_params.query.to_lowercase())))
                 && x.p2p == server_filter_params.p2p
         })
         .cloned()

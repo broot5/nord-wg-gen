@@ -44,7 +44,7 @@ pub fn ServerList() -> Element {
                 };
             }
 
-            let servers_iter = filtered_servers.iter().take(24);
+            let servers_iter = filtered_servers.iter().take(100);
             let servers_rendered = servers_iter.map(|server| {
                 rsx! {
                     ServerInfo { server: server.clone() }
@@ -86,7 +86,8 @@ pub fn ServerInfo(server: Server) -> Element {
             button {
                 onclick: move |_| {
                     let config = generate_config(&user_config.read(), &server);
-                    *output.write() = Output {
+                    *output
+                        .write() = Output {
                         config: config.clone(),
                         qrcode_bytes: make_qrcode(&config),
                         server_identifier: server.identifier.clone(),

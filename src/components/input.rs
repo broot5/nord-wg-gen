@@ -11,34 +11,14 @@ pub fn InputForm() -> Element {
 
     rsx! {
         div { class: "sm:max-w-sm card bg-base-200 shadow-lg p-4 m-2",
-            div { class: "columns-2",
-                FormField {
-                    id: "country",
-                    label_text: "Country",
-                    input_type: "text",
-                    value: &server_filter_param.read().country,
-                    oninput: move |event: FormEvent| {
-                        server_filter_param.write().country = event.value();
-                    }
-                }
-                FormField {
-                    id: "country_code",
-                    label_text: "Country Code",
-                    input_type: "text",
-                    value: &server_filter_param.read().country_code,
-                    oninput: move |event: FormEvent| {
-                        server_filter_param.write().country_code = event.value();
-                    }
-                }
-            }
             div {
                 FormField {
-                    id: "city",
-                    label_text: "City",
+                    id: "search",
+                    label_text: "Search (Country Code, Country, City)",
                     input_type: "text",
-                    value: &server_filter_param.read().city,
+                    value: &server_filter_param.read().query,
                     oninput: move |event: FormEvent| {
-                        server_filter_param.write().city = event.value();
+                        server_filter_param.write().query = event.value();
                     }
                 }
             }
