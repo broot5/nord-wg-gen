@@ -235,13 +235,13 @@ function __wbg_adapter_53(arg0, arg1) {
 function __wbg_adapter_56(arg0, arg1, arg2) {
     _assertNum(arg0);
     _assertNum(arg1);
-    wasm.closure1175_externref_shim(arg0, arg1, arg2);
+    wasm.closure1182_externref_shim(arg0, arg1, arg2);
 }
 
 function __wbg_adapter_59(arg0, arg1, arg2) {
     _assertNum(arg0);
     _assertNum(arg1);
-    wasm.closure1299_externref_shim(arg0, arg1, arg2);
+    wasm.closure1306_externref_shim(arg0, arg1, arg2);
 }
 
 function addToExternrefTable0(obj) {
@@ -1456,20 +1456,20 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return ret;
     };
-    imports.wbg.__wbindgen_closure_wrapper3610 = function() { return logError(function (arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 1038, __wbg_adapter_50);
+    imports.wbg.__wbindgen_closure_wrapper3602 = function() { return logError(function (arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 1045, __wbg_adapter_50);
         return ret;
     }, arguments) };
-    imports.wbg.__wbindgen_closure_wrapper3762 = function() { return logError(function (arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 1172, __wbg_adapter_53);
+    imports.wbg.__wbindgen_closure_wrapper3754 = function() { return logError(function (arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 1179, __wbg_adapter_53);
         return ret;
     }, arguments) };
-    imports.wbg.__wbindgen_closure_wrapper3764 = function() { return logError(function (arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 1172, __wbg_adapter_56);
+    imports.wbg.__wbindgen_closure_wrapper3756 = function() { return logError(function (arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 1179, __wbg_adapter_56);
         return ret;
     }, arguments) };
-    imports.wbg.__wbindgen_closure_wrapper4043 = function() { return logError(function (arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 1300, __wbg_adapter_59);
+    imports.wbg.__wbindgen_closure_wrapper4035 = function() { return logError(function (arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 1307, __wbg_adapter_59);
         return ret;
     }, arguments) };
     imports.wbg.__wbindgen_init_externref_table = function() {
