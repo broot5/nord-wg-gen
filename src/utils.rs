@@ -5,19 +5,20 @@ use crate::app::{ServerFilterParam, UserConfig};
 use crate::mapper::Server;
 
 pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Server]) -> Vec<Server> {
+    let query_lowercase = server_filter_params.query.to_lowercase();
     let mut filtered_servers: Vec<Server> = servers
         .iter()
-        .filter(|x| {
-            x.status
-                && (server_filter_params.query.is_empty()
+        .filter(|server| {
+            server.status
+                && (query_lowercase.is_empty()
                     || [
-                        x.country.to_lowercase(),
-                        x.country_code.to_lowercase(),
-                        x.city.to_lowercase(),
+                        server.country.to_lowercase(),
+                        server.country_code.to_lowercase(),
+                        server.city.to_lowercase(),
                     ]
                     .iter()
-                    .any(|field| field.contains(&server_filter_params.query.to_lowercase())))
-                && x.p2p == server_filter_params.p2p
+                    .any(|field| field.contains(&query_lowercase)))
+                && server.p2p == server_filter_params.p2p
         })
         .cloned()
         .collect();
@@ -51,8 +52,8 @@ Endpoint = {0}:51820",
     )
 }
 
-pub fn make_qrcode(config: &String) -> Vec<u8> {
-    let code = QrCode::new(config).unwrap();
+pub fn make_qrcode(data: &str) -> Vec<u8> {
+    let code = QrCode::new(data).unwrap();
     let image = code.render::<image::Luma<u8>>().build();
 
     let mut bytes: Vec<u8> = Vec::new();
@@ -69,14 +70,10 @@ pub fn get_flag_emoji(country_code: &str) -> Option<String> {
     let flag: String = country_code
         .to_uppercase()
         .chars()
-        .filter_map(|char| std::char::from_u32(base + char as u32))
+        .map(|char| std::char::from_u32(base + char as u32).unwrap())
         .collect();
 
-    if flag.is_empty() {
-        None
-    } else {
-        Some(flag)
-    }
+    Some(flag)
 }
 
 #[cfg(test)]
