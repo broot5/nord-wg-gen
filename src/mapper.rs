@@ -135,7 +135,7 @@ struct Group {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Server {
-    id: usize,
+    pub id: usize,
     pub name: String,
     pub station: IpAddr,
     pub hostname: String,

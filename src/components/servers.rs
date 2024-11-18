@@ -82,7 +82,7 @@ pub fn ServerInfo(server: Server) -> Element {
     let server_load = server.load;
 
     rsx! {
-        div { class: "stats bg-base-200 shadow-lg m-2",
+        div { key: "{server.id}", class: "stats bg-base-200 shadow-lg m-2",
             button {
                 onclick: move |_| {
                     let config = generate_config(&user_config.read(), &server);

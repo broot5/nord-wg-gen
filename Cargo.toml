@@ -22,3 +22,12 @@ serde_json = "1.0"
 
 [dev-dependencies]
 reqwest = { version = "0.12", features = ["blocking"] }
+
+[profile.release]
+opt-level = "z"
+debug = false
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+incremental = false
