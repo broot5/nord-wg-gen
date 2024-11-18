@@ -24,6 +24,9 @@ pub fn Result() -> Element {
                     }
                 }
             }
+            form { method: "dialog", class: "modal-backdrop",
+                button { "Close" }
+            }
         }
     }
 }
