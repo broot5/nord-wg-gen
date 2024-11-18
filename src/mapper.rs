@@ -6,7 +6,7 @@ use serde::Deserialize;
 pub struct ServerIntermediate {
     id: i64,
     // created_at: String,
-    //updated_at: String,
+    // updated_at: String,
     name: String,
     station: String,
     // ipv6_station: String,
