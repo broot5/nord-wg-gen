@@ -12,8 +12,8 @@ pub fn filter_servers(server_filter_params: &ServerFilterParam, servers: &[Serve
             server.status
                 && (query_lowercase.is_empty()
                     || [
+                        server.identifier.to_lowercase(),
                         server.country.to_lowercase(),
-                        server.country_code.to_lowercase(),
                         server.city.to_lowercase(),
                     ]
                     .iter()
