@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::app::{Output, ServerFilterParam, UserConfig, URL};
+use crate::app::{Output, ServerFilterParam, UserConfig, CORS_PROXY_PREFIX, URL};
 use crate::mapper::{Server, ServerIntermediate};
 use crate::utils::{filter_servers, generate_config, get_flag_emoji, make_qrcode};
 
@@ -11,7 +11,7 @@ pub fn ServerList() -> Element {
     let servers_resource: Resource<Result<Vec<Server>, Box<dyn std::error::Error>>> =
         use_resource(|| async move {
             let server_intermediates = reqwest::Client::new()
-                .get("https://corsproxy.io/?".to_owned() + URL)
+                .get(CORS_PROXY_PREFIX.to_owned() + URL)
                 .send()
                 .await
                 .unwrap()
