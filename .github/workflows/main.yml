@@ -44,4 +44,4 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: target/dx/release
+          folder: target/dx/nord-wg-gen/release/web/public
