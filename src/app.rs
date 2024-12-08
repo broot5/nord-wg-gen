@@ -22,6 +22,8 @@ pub struct Output {
 pub const CORS_PROXY_PREFIX: &str = "https://cloudflare-cors-anywhere.ofcombqarf.workers.dev/?";
 pub const URL: &str = "https://api.nordvpn.com/v1/servers?limit=9999&filters[servers_technologies][identifier]=wireguard_udp";
 
+const TAILWIND_URL: Asset = asset!("/assets/tailwind.css");
+
 #[component]
 pub fn App() -> Element {
     use_context_provider(|| {
@@ -48,6 +50,8 @@ pub fn App() -> Element {
     });
 
     rsx! {
+        document::Link { rel: "stylesheet", href: TAILWIND_URL }
+
         header { Navbar {} }
         main { class: "sm:container sm:mx-auto",
             div { class: "sm:flex",

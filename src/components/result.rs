@@ -17,7 +17,7 @@ pub fn Result() -> Element {
                 div { class: "modal-action",
                     DownloadButton {
                         string: "{output.read().config}",
-                        file_name: "nord-{output.read().server_identifier}.conf"
+                        file_name: "nord-{output.read().server_identifier}.conf",
                     }
                     form { method: "dialog",
                         button { class: "btn btn-secondary", "Close" }
@@ -48,7 +48,7 @@ pub fn ConfigText(config: String) -> Element {
 pub fn DownloadButton(string: String, file_name: String) -> Element {
     rsx! {
         a {
-            href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(string)}",
+            href: "data:text/plain;base64,{base64::engine::general_purpose::STANDARD.encode(&string)}",
             download: file_name,
             button { class: "btn btn-accent", "Download {file_name}" }
         }
@@ -61,7 +61,7 @@ pub fn QRCode(bytes: Vec<u8>) -> Element {
         div { class: "rounded-2xl overflow-hidden",
             img {
                 alt: "QR Code",
-                src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(bytes)}"
+                src: "data:image/png;base64,{base64::engine::general_purpose::STANDARD.encode(&bytes)}",
             }
         }
     }

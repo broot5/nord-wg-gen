@@ -19,7 +19,7 @@ pub fn InputForm() -> Element {
                     value: &server_filter_param.read().query,
                     oninput: move |event: FormEvent| {
                         server_filter_param.write().query = event.value();
-                    }
+                    },
                 }
             }
             div {
@@ -31,7 +31,7 @@ pub fn InputForm() -> Element {
                     checked: server_filter_param.read().p2p,
                     oninput: move |event: FormEvent| {
                         server_filter_param.write().p2p = event.value().trim().parse().unwrap();
-                    }
+                    },
                 }
             }
             div {
@@ -42,7 +42,7 @@ pub fn InputForm() -> Element {
                     value: &user_config.read().private_key,
                     oninput: move |event: FormEvent| {
                         user_config.write().private_key = event.value();
-                    }
+                    },
                 }
             }
             div {
@@ -53,7 +53,7 @@ pub fn InputForm() -> Element {
                     value: &*user_config.read().dns,
                     oninput: move |event: FormEvent| {
                         user_config.write().dns = event.value();
-                    }
+                    },
                 }
             }
             div {
@@ -64,7 +64,7 @@ pub fn InputForm() -> Element {
                     value: &user_config.read().mtu,
                     oninput: move |event: FormEvent| {
                         user_config.write().mtu = event.value();
-                    }
+                    },
                 }
             }
         }
@@ -91,7 +91,7 @@ pub fn FormField(
                 r#type: input_type,
                 value,
                 checked,
-                oninput: move |event| { debounce.action(event) }
+                oninput: move |event| { debounce.action(event) },
             }
         }
     }

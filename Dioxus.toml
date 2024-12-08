@@ -3,15 +3,7 @@
 # App (Project) Name
 name = "nord-wg-gen"
 
-# Dioxus App Default Platform
-# desktop, web
 default_platform = "web"
-
-# `build` & `serve` dist path
-out_dir = "dist"
-
-# resource (assets) file folder
-asset_dir = "assets"
 
 [web.app]
 
@@ -20,27 +12,17 @@ title = "nord-wg-gen"
 
 base_path = "nord-wg-gen"
 
-[web.watcher]
-
-index_on_404 = true
-
-# when watcher trigger, regenerate the `index.html`
-reload_html = true
-
-# which files or dirs will be watcher monitoring
-watch_path = ["src", "assets"]
-
 # include `assets` in web platform
 [web.resource]
 
-# CSS style file
-style = ["tailwind.css"]
+# Additional CSS style files
+style = []
 
-# Javascript code file
+# Additional JavaScript files
 script = []
 
 [web.resource.dev]
 
-# Javascript code file
+# JavaScript code file
 # serve: [dev-server] only
 script = []

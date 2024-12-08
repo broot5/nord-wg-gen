@@ -91,7 +91,7 @@ pub fn ServerInfo(server: Server) -> Element {
                         qrcode_bytes: make_qrcode(&config),
                         server_identifier: server.identifier.clone(),
                     };
-                    eval("server_dialog.showModal();").send("Open dialog".into()).unwrap();
+                    document::eval("server_dialog.showModal();").send("Open dialog").unwrap();
                 },
                 div { class: "stat",
                     div { class: "stat-title flex justify-between",
