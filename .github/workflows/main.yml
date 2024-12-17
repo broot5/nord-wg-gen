@@ -23,7 +23,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Install dioxus-cli
-        run: cargo install dioxus-cli
+        uses: taiki-e/install-action@v2
+        with:
+          tool: dioxus-cli
 
       - name: Install Node.js
         uses: actions/setup-node@v4
