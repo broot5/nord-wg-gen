@@ -80,16 +80,17 @@ pub fn ServerInfo(server: Server) -> Element {
     let mut output = use_context::<Signal<Output>>();
 
     let server_load = server.load;
+    let server_for_click = server.clone();
 
     rsx! {
         div { key: "{server.id}", class: "stats bg-base-200 shadow-lg m-2",
             button {
                 onclick: move |_| {
-                    let config = generate_config(&user_config.read(), &server);
+                    let config = generate_config(&user_config.read(), &server_for_click);
                     *output.write() = Output {
                         config: config.clone(),
                         qrcode_bytes: make_qrcode(&config),
-                        server_identifier: server.identifier.clone(),
+                        server_identifier: server_for_click.identifier.clone(),
                     };
                     document::eval("server_dialog.showModal();").send("Open dialog").unwrap();
                 },
